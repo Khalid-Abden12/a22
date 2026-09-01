@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بطاقات الألماني ↔ العربي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12181f;
+    --panel:#1b232c;
+    --panel-2:#222d38;
+    --line: rgba(237,234,227,0.10);
+    --paper:#EDEAE3;
+    --paper-dim: rgba(237,234,227,0.62);
+    --gold:#e2a545;
+    --gold-dim: rgba(226,165,69,0.16);
+    --teal:#4bb3ad;
+    --teal-dim: rgba(75,179,173,0.16);
+    --violet:#a48be0;
+    --violet-dim: rgba(164,139,224,0.16);
+    --rose:#d97a94;
+    --bad:#e26a5f;
+    --bad-dim: rgba(226,106,95,0.14);
+    --good:#6fbf8b;
+    --good-dim: rgba(111,191,139,0.14);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% -10%, rgba(226,165,69,0.10), transparent 45%),
+      radial-gradient(circle at 90% 110%, rgba(75,179,173,0.12), transparent 45%),
+      var(--ink);
+    min-height:100vh;
+    color:var(--paper);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:28px 14px 60px;
+  }
+  .app{ width:100%; max-width:720px; }
+
+  header{ text-align:center; margin-bottom:18px; }
+  .eyebrow{
+    font-size:12.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--paper-dim); margin-bottom:8px; direction:rtl;
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600; font-size:24px; margin:0 0 18px;
+    color:var(--paper); letter-spacing:.01em;
+  }
+
+  .switch{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    background:var(--panel); border:1px solid var(--line); border-radius:999px;
+    padding:5px; max-width:560px; margin:0 auto; flex-wrap:wrap;
+  }
+  .switch button{
+    flex:1; min-width:110px; border:none; cursor:pointer;
+    padding:11px 10px; border-radius:999px; font-size:13.5px; font-weight:600;
+    color:var(--paper-dim); font-family:'IBM Plex Sans Arabic', sans-serif;
+    background:transparent;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    transition:color .2s ease, background .2s ease;
+  }
+  .switch.sub{ margin-top:10px; max-width:420px; }
+  #btn-chap-l1.active{ color:var(--ink); background:var(--rose); }
+  #btn-chap-k2.active{ color:var(--ink); background:var(--gold); }
+  #btn-chap-num.active{ color:var(--ink); background:var(--violet); }
+  #btn-ar-de.active{ color:var(--ink); background:var(--gold); }
+  #btn-de-ar.active{ color:var(--ink); background:var(--teal); }
+
+  .progress-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:22px 0 8px; font-size:13.5px; color:var(--paper-dim);
+  }
+  .progress-track{
+    height:6px; border-radius:999px; background:var(--panel-2); overflow:hidden; margin-bottom:4px;
+    border:1px solid var(--line);
+  }
+  .progress-fill{
+    height:100%; border-radius:999px;
+    background:linear-gradient(90deg, var(--teal), var(--gold));
+    transition:width .35s ease;
+  }
+
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 22px; margin-top:16px; box-shadow:0 20px 40px -24px rgba(0,0,0,.6);
+  }
+  .speaker{
+    display:inline-block; font-size:12px; font-weight:600; letter-spacing:.04em;
+    color:var(--ink); background:var(--paper); padding:3px 11px; border-radius:999px;
+    margin-bottom:14px; direction:ltr;
+  }
+  .prompt{
+    font-size:23px; line-height:1.6; min-height:64px; display:flex; align-items:center; gap:12px;
+    margin-bottom:20px;
+  }
+  .prompt[dir="rtl"]{ font-family:'Amiri', serif; font-size:26px; }
+  .prompt[dir="ltr"]{ font-family:'Fraunces', serif; font-weight:500; }
+  .prompt-text{ flex:1; }
+  #prompt.numbers-prompt .prompt-text{ font-size:44px; font-weight:600; }
+
+  .speak-btn{
+    flex:none; width:38px; height:38px; border-radius:50%; border:1px solid var(--line);
+    background:var(--teal-dim); color:var(--teal); font-size:16px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:transform .12s ease, background .2s ease; padding:0;
+  }
+  .speak-btn:hover{ background:rgba(75,179,173,0.28); }
+  .speak-btn:active{ transform:scale(.92); }
+  .speak-btn.small{ width:30px; height:30px; font-size:13px; }
+  .feedback .row.answer-row-fb{ display:flex; align-items:center; gap:8px; }
+
+  .answer-label{ font-size:12.5px; color:var(--paper-dim); margin-bottom:8px; }
+  .answer-row{ display:flex; gap:10px; }
+  input[type=text]{
+    flex:1; background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; color:var(--paper); font-size:17px; outline:none;
+    font-family:'IBM Plex Sans Arabic', sans-serif; transition:border-color .2s ease, background .2s ease;
+  }
+  input[type=text][dir="ltr"]{ font-family:'Fraunces', serif; }
+  input[type=text][dir="rtl"]{ font-family:'Amiri', serif; }
+  input[type=text]:focus{ border-color:var(--gold); background:var(--panel); }
+  input[type=text].wrong{ border-color:var(--bad); }
+  input[type=text].right{ border-color:var(--good); }
+
+  button.check{
+    border:none; border-radius:12px; padding:0 22px; font-size:15px; font-weight:600;
+    cursor:pointer; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans Arabic', sans-serif; transition:transform .12s ease, opacity .2s ease;
+  }
+  button.check:hover{ opacity:.9; }
+  button.check:active{ transform:scale(.97); }
+
+  .feedback{ margin-top:16px; border-radius:14px; padding:14px 16px; font-size:14.5px; line-height:1.9; display:none; }
+  .feedback.show{ display:block; }
+  .feedback.bad{ background:var(--bad-dim); border:1px solid rgba(226,106,95,0.35); }
+  .feedback.good{ background:var(--good-dim); border:1px solid rgba(111,191,139,0.35); }
+  .feedback b{ color:var(--paper); }
+  .feedback .row{ margin-bottom:4px; }
+  .feedback .row:last-child{ margin-bottom:0; }
+  .feedback .tag{ display:inline-block; min-width:88px; color:var(--paper-dim); font-size:12.5px; }
+  .word-breakdown{ margin-top:6px; }
+  .word-chip-wrap{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .word-chip{
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:10px;
+    padding:6px 10px; min-width:52px;
+  }
+  .word-chip b{ font-family:'Fraunces', serif; font-size:14px; color:var(--paper); white-space:nowrap; }
+  .word-chip .wc-meaning{ font-size:11.5px; color:var(--gold); white-space:nowrap; }
+
+  .nav-row{ display:flex; align-items:center; justify-content:space-between; margin-top:20px; gap:10px; }
+  .nav-btn{
+    border:1px solid var(--line); background:var(--panel-2); color:var(--paper);
+    border-radius:12px; padding:11px 16px; font-size:14px; cursor:pointer; font-family:inherit;
+    display:flex; align-items:center; gap:6px; transition:border-color .2s ease;
+  }
+  .nav-btn:hover{ border-color:var(--gold); }
+  .nav-btn:disabled{ opacity:.35; cursor:not-allowed; }
+  .nav-btn.next{ background:var(--gold); color:var(--ink); border-color:var(--gold); font-weight:600; }
+
+  .dotmap-wrap{ margin-top:26px; }
+  .dotmap-label{ font-size:12.5px; color:var(--paper-dim); margin-bottom:10px; }
+  .dotmap{
+    display:flex; flex-wrap:wrap; gap:7px; max-height:118px; overflow-y:auto; padding:2px;
+  }
+  .dot{
+    width:30px; height:30px; border-radius:9px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--paper-dim); font-size:12px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:transform .12s ease;
+  }
+  .dot:hover{ transform:translateY(-2px); }
+  .dot.current{ border-color:var(--paper); color:var(--paper); }
+  .dot.correct{ background:var(--good-dim); color:var(--good); border-color:rgba(111,191,139,.4); }
+  .dot.incorrect{ background:var(--bad-dim); color:var(--bad); border-color:rgba(226,106,95,.4); }
+  .dot.flagged{ background:rgba(226,196,50,0.22); color:#e8cf3d; border-color:rgba(226,196,50,.55); }
+
+  .flag-row{ display:flex; justify-content:center; margin-top:14px; }
+  .flag-btn{
+    border:1px solid var(--line); background:var(--panel-2); color:var(--paper-dim);
+    border-radius:999px; padding:9px 18px; font-size:13px; cursor:pointer; font-family:inherit;
+    display:flex; align-items:center; gap:7px; transition:all .2s ease;
+  }
+  .flag-btn.on{ background:rgba(226,196,50,0.18); color:#e8cf3d; border-color:rgba(226,196,50,.5); }
+
+  .reset-row{ text-align:center; margin-top:14px; }
+  .reset-btn{
+    border:1px solid rgba(226,106,95,.35); background:rgba(226,106,95,.08); color:var(--bad);
+    border-radius:999px; padding:8px 16px; font-size:12.5px; cursor:pointer; font-family:inherit;
+  }
+  .reset-btn:hover{ background:rgba(226,106,95,.18); }
+
+  footer{ text-align:center; margin-top:28px; font-size:12px; color:var(--paper-dim); }
+
+  @media (max-width:480px){
+    .prompt{ font-size:20px; }
+    .prompt[dir="rtl"]{ font-size:22px; }
+    #prompt.numbers-prompt .prompt-text{ font-size:34px; }
+    .answer-row{ flex-direction:column; }
+    button.check{ padding:13px; }
+    .switch button{ min-width:88px; font-size:12px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">مراجعة الألماني</div>
+    <h1>بطاقات <span>الألماني</span> ↔ Deutsch</h1>
+
+    <div class="switch" id="chapter-switch">
+      <button id="btn-chap-l1" class="active">الدرس الأول</button>
+      <button id="btn-chap-k2">الدرس الثاني</button>
+      <button id="btn-chap-num">الأرقام 🔢</button>
+    </div>
+
+    <div class="switch sub" id="dir-switch">
+      <button id="btn-ar-de" class="active">عربي → ألماني</button>
+      <button id="btn-de-ar">ألماني → عربي</button>
+    </div>
+  </header>
+
+  <div class="progress-row">
+    <span id="progress-text">السؤال 1 من 1</span>
+    <span id="score-text">صحيح: 0</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:2%"></div></div>
+
+  <div class="card">
+    <div id="speaker" class="speaker" style="display:none"></div>
+    <div id="prompt" class="prompt" dir="rtl"></div>
+
+    <div class="answer-label" id="answer-label">اكتب الترجمة بالألمانية:</div>
+    <div class="answer-row">
+      <input type="text" id="answer-input" dir="ltr" autocomplete="off" spellcheck="false">
+      <button type="button" class="speak-btn" id="answer-speak-btn" style="display:none" aria-label="نطق الإجابة بالألمانية">🔊</button>
+      <button class="check" id="check-btn">تحقق</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="nav-row">
+      <button class="nav-btn" id="prev-btn">◀ السابق</button>
+      <button class="nav-btn next" id="next-btn">التالي ▶</button>
+    </div>
+
+    <div class="flag-row">
+      <button type="button" class="flag-btn" id="flag-btn">🚩 علّم السؤال ده للمراجعة</button>
+    </div>
+  </div>
+
+  <div class="reset-row">
+    <button type="button" class="reset-btn" id="reset-btn">🗑️ امسح كل الإجابات والتقدّم</button>
+  </div>
+
+  <div class="dotmap-wrap">
+    <div class="dotmap-label">انتقل إلى أي سؤال:</div>
+    <div class="dotmap" id="dotmap"></div>
+  </div>
+
+  <footer>الإجابات المحفوظة تبقى أثناء الجلسة حتى لو أخطأت — يمكنك العودة ومراجعتها.</footer>
+</div>
+
+<script>
+/* ===================== DATA: Lektion 1 ===================== */
+const ITEMS_L1 = [
+  {sp:null, de:"Boris Walder kommt aus Österreich.", ar:"بوريس فالدر يأتي من النمسا."},
+  {sp:null, de:"Er wohnt in Salzburg.", ar:"هو يسكن في سالزبورغ."},
+  {sp:null, de:"Er spricht Deutsch und Englisch.", ar:"هو يتحدث الألمانية والإنجليزية."},
+  {sp:null, de:"Er lernt Arabisch.", ar:"هو يتعلم العربية."},
+  {sp:null, de:"Saki Tanaka wohnt in Berlin.", ar:"ساكي تاناكا تسكن في برلين."},
+  {sp:null, de:"Sie kommt aus Japan, aus Tokio.", ar:"هي تأتي من اليابان، من طوكيو."},
+  {sp:null, de:"Sie spricht Japanisch und Deutsch.", ar:"هي تتحدث اليابانية والألمانية."},
+  {sp:null, de:"Sie lernt Englisch.", ar:"هي تتعلم الإنجليزية."},
+  {sp:null, de:"Kateb Brahim kommt aus Algerien.", ar:"كاتب إبراهيم يأتي من الجزائر."},
+  {sp:null, de:"Er spricht Arabisch, Französisch und lernt Deutsch.", ar:"هو يتحدث العربية والفرنسية ويتعلم الألمانية."},
+  {sp:null, de:"Er wohnt in Paris.", ar:"هو يسكن في باريس."},
+  {sp:null, de:"aus der Schweiz", ar:"من سويسرا"},
+  {sp:null, de:"aus der Türkei", ar:"من تركيا"},
+  {sp:null, de:"aus den USA", ar:"من الولايات المتحدة"},
+  {sp:null, de:"aus der Ukraine", ar:"من أوكرانيا"},
+  {sp:null, de:"Olivia Miller kommt aus den USA.", ar:"أوليفيا ميلر تأتي من الولايات المتحدة."},
+  {sp:null, de:"Sie wohnt in San Francisco.", ar:"هي تسكن في سان فرانسيسكو."},
+  {sp:null, de:"Sie spricht Englisch und Deutsch.", ar:"هي تتحدث الإنجليزية والألمانية."},
+  {sp:null, de:"Sie lernt Spanisch.", ar:"هي تتعلم الإسبانية."},
+  {sp:null, de:"Gabriel Santos kommt aus Brasilien.", ar:"غابرييل سانتوس يأتي من البرازيل."},
+  {sp:null, de:"Er wohnt in Deutschland, in Köln.", ar:"هو يسكن في ألمانيا، في كولن."},
+  {sp:null, de:"Er spricht Portugiesisch, Deutsch und Englisch.", ar:"هو يتحدث البرتغالية والألمانية والإنجليزية."},
+  {sp:null, de:"Alessia Conti spricht Italienisch, Französisch und Deutsch.", ar:"أليسيا كونتي تتحدث الإيطالية والفرنسية والألمانية."},
+  {sp:null, de:"Sie kommt aus der Schweiz und wohnt in Lugano.", ar:"هي تأتي من سويسرا وتسكن في لوغانو."},
+  {sp:null, de:"Hallo Nina!", ar:"مرحبًا نينا!"},
+  {sp:null, de:"Hallo Niklas!", ar:"مرحبًا نيكلاس!"},
+  {sp:null, de:"Guten Tag!", ar:"طاب يومك!"},
+  {sp:null, de:"Guten Tag, Herr Hansen!", ar:"طاب يومك يا سيد هانزن!"},
+  {sp:null, de:"Guten Morgen!", ar:"صباح الخير!"},
+  {sp:null, de:"Guten Abend!", ar:"مساء الخير!"},
+  {sp:null, de:"Tschüs! Ciao!", ar:"مع السلامة! سلام!"},
+  {sp:null, de:"Auf Wiedersehen!", ar:"إلى اللقاء!"},
+  {sp:null, de:"Gute Nacht!", ar:"تصبح على خير!"},
+  {sp:null, de:"Wer bist du?", ar:"من أنت؟"},
+  {sp:null, de:"Wie heißt du?", ar:"ما اسمك؟"},
+  {sp:null, de:"Wie ist Ihr Name?", ar:"ما هو اسمك؟ (رسمي)"},
+  {sp:null, de:"Wie heißen Sie?", ar:"ما اسمك؟ (رسمي)"},
+  {sp:null, de:"Ich bin Julia.", ar:"أنا يوليا."},
+  {sp:null, de:"Ich heiße Niklas.", ar:"اسمي نيكلاس."},
+  {sp:null, de:"Mein Name ist Nina Weber.", ar:"اسمي نينا فيبر."},
+  {sp:null, de:"Das ist Herr Hansen.", ar:"هذا السيد هانزن."},
+  {sp:null, de:"Das ist Frau Weber.", ar:"هذه السيدة فيبر."},
+  {sp:null, de:"Wo wohnen Sie?", ar:"أين تسكن؟ (رسمي)"},
+  {sp:null, de:"Wo wohnst du?", ar:"أين تسكن؟"},
+  {sp:null, de:"Woher kommen Sie?", ar:"من أين أنت؟ (رسمي)"},
+  {sp:null, de:"Woher kommst du?", ar:"من أين أنت؟"},
+  {sp:null, de:"Welche Sprachen sprechen Sie?", ar:"ما اللغات التي تتحدثها؟ (رسمي)"},
+  {sp:null, de:"Welche Sprachen sprichst du?", ar:"ما اللغات التي تتحدثها؟"},
+  {sp:null, de:"Wie ist Ihre Telefonnummer?", ar:"ما هو رقم هاتفك؟ (رسمي)"},
+  {sp:null, de:"Wie ist deine Telefonnummer?", ar:"ما هو رقم هاتفك؟"},
+  {sp:null, de:"Wie ist Ihre E-Mail-Adresse?", ar:"ما هو بريدك الإلكتروني؟ (رسمي)"},
+  {sp:null, de:"Wie ist deine E-Mail-Adresse?", ar:"ما هو بريدك الإلكتروني؟"},
+  {sp:null, de:"Wer ist das?", ar:"من هذا؟"},
+  {sp:null, de:"Ich wohne in Frankfurt.", ar:"أنا أسكن في فرانكفورت."},
+  {sp:null, de:"Ich komme aus Spanien.", ar:"أنا من إسبانيا."},
+  {sp:null, de:"Ich spreche Deutsch und Russisch.", ar:"أتحدث الألمانية والروسية."},
+  {sp:null, de:"Das ist Selina Lang.", ar:"هذه سيلينا لانغ."},
+  {sp:null, de:"Wie geht es Ihnen?", ar:"كيف حالك؟ (رسمي)"},
+  {sp:null, de:"Wie geht's dir?", ar:"كيف حالك؟"},
+  {sp:null, de:"Wie geht's?", ar:"كيف الحال؟"},
+  {sp:null, de:"Danke, sehr gut.", ar:"شكرًا، أنا بخير جدًا."},
+  {sp:null, de:"Danke, gut.", ar:"شكرًا، أنا بخير."},
+  {sp:null, de:"Ganz gut.", ar:"لا بأس."},
+  {sp:null, de:"Und Ihnen?", ar:"وأنت؟ (رسمي)"},
+  {sp:null, de:"Und dir?", ar:"وأنت؟"},
+  {sp:null, de:"Wer bist du? Ich bin Nina.", ar:"من أنتِ؟ أنا نينا."},
+  {sp:null, de:"Wie heißt du? Ich heiße Nina.", ar:"ما اسمكِ؟ اسمي نينا."},
+  {sp:null, de:"Wie heißen Sie? Mein Name ist Nina Weber.", ar:"ما اسمك؟ (رسمي) اسمي نينا فيبر."},
+  {sp:null, de:"Wie ist Ihr Name? Ich heiße Nina Weber.", ar:"ما هو اسمك؟ (رسمي) اسمي نينا فيبر."},
+  {sp:"Nina Weber", de:"Guten Morgen. Mein Name ist Nina Weber.", ar:"صباح الخير. اسمي نينا فيبر."},
+  {sp:"Oliver Hansen", de:"Guten Morgen, Frau Weber! Ich heiße Oliver Hansen.", ar:"صباح الخير سيدة فيبر! اسمي أوليفر هانزن."},
+  {sp:null, de:"Guten Tag, Frau Kowalski.", ar:"طاب يومك سيدة كوفالسكي."},
+  {sp:null, de:"Guten Tag, Frau Weber! Wie geht es Ihnen?", ar:"طاب يومك سيدة فيبر! كيف حالك؟"},
+  {sp:null, de:"Danke, gut. Und Ihnen?", ar:"شكرًا، أنا بخير. وأنت؟"},
+  {sp:null, de:"Auch gut, danke.", ar:"أنا بخير أيضًا، شكرًا."},
+  {sp:"Oliver Hansen", de:"Hallo Frau Weber.", ar:"مرحبًا سيدة فيبر."},
+  {sp:"Nina Weber", de:"Hallo Herr Hansen. Das ist Frau Kowalski.", ar:"مرحبًا سيد هانزن. هذه سيدة كوفالسكي."},
+  {sp:"Oliver Hansen", de:"Guten Tag, Frau Kowalski. Mein Name ist Oliver Hansen.", ar:"طاب يومك سيدة كوفالسكي. اسمي أوليفر هانزن."},
+  {sp:"Frau Kowalski", de:"Guten Tag! Entschuldigung, wie heißen Sie?", ar:"طاب يومك! عفوًا، ما اسمك؟"},
+  {sp:"Oliver Hansen", de:"Oliver Hansen.", ar:"أوليفر هانزن."},
+  {sp:null, de:"Auf Wiedersehen, Herr Hansen. Tschüs, Frau Weber.", ar:"إلى اللقاء سيد هانزن. مع السلامة سيدة فيبر."},
+  {sp:null, de:"Auf Wiedersehen, Frau Kowalski.", ar:"إلى اللقاء سيدة كوفالسكي."},
+  {sp:null, de:"Woher kommen Sie, Frau Lang?", ar:"من أين أنتِ يا سيدة لانغ؟"},
+  {sp:"Selina Lang", de:"Ich komme aus Deutschland.", ar:"أنا من ألمانيا."},
+  {sp:null, de:"Welche Sprachen sprechen Sie?", ar:"ما اللغات التي تتحدثينها؟"},
+  {sp:"Selina Lang", de:"Ich spreche Spanisch, Englisch und Deutsch.", ar:"أتحدث الإسبانية والإنجليزية والألمانية."},
+  {sp:null, de:"Wo wohnen Sie?", ar:"أين تسكنين؟"},
+  {sp:"Selina Lang", de:"Ich wohne in Frankfurt.", ar:"أنا أسكن في فرانكفورت."},
+  {sp:"Jan", de:"Ich heiße Jan.", ar:"اسمي يان."},
+  {sp:"Jan", de:"Aus Frankfurt.", ar:"من فرانكفورت."},
+  {sp:"Jan", de:"In Zürich.", ar:"في زيورخ."},
+  {sp:null, de:"Das ist Frau Lang. Sie kommt aus Deutschland. Sie wohnt in Frankfurt.", ar:"هذه السيدة لانغ. هي تأتي من ألمانيا. هي تسكن في فرانكفورت."},
+  {sp:null, de:"Jan kommt aus Frankfurt. Er wohnt in Zürich.", ar:"يان يأتي من فرانكفورت. هو يسكن في زيورخ."},
+  {sp:null, de:"Alexis Barbos.", ar:"أليكسيس باربوس."},
+  {sp:null, de:"alexis_barbos@quinnet.com.", ar:"alexis_barbos@quinnet.com"},
+  {sp:null, de:"Entschuldigung, noch einmal bitte.", ar:"عفوًا، مرة أخرى من فضلك."},
+  {sp:null, de:"Das verstehe ich nicht.", ar:"أنا لا أفهم ذلك."},
+  {sp:null, de:"Bitte ein bisschen langsamer.", ar:"من فضلك، ببطء أكثر قليلاً."},
+  {sp:null, de:"At-Zeichen", ar:"علامة @ (أت)"},
+  {sp:null, de:"Punkt", ar:"نقطة"},
+  {sp:null, de:"Minus", ar:"شرطة (مينوس)"},
+  {sp:null, de:"Unterstrich", ar:"شرطة سفلية"},
+  {sp:null, de:"Hallo Niklas! Wie geht's?", ar:"مرحبًا نيكلاس! كيف الحال؟"},
+  {sp:null, de:"Danke, sehr gut! Und dir?", ar:"شكرًا، أنا بخير جدًا! وأنت؟"},
+  {sp:null, de:"Ganz gut, danke.", ar:"لا بأس، شكرًا."},
+  {sp:null, de:"Hallo Julia! Wie geht's dir?", ar:"مرحبًا يوليا! كيف حالك؟"},
+  {sp:null, de:"Hallo, ich bin Julia. Und du? Wer bist du?", ar:"مرحبًا، أنا يوليا. وأنت؟ من أنت؟"},
+  {sp:null, de:"Entschuldigung, wie heißt du?", ar:"عفوًا، ما اسمك؟"},
+  {sp:null, de:"Tschüs Julia! Bis bald!", ar:"مع السلامة يا يوليا! أراك قريبًا!"},
+  {sp:null, de:"das Handtuch", ar:"المنشفة"},
+  {sp:null, de:"die Flasche", ar:"الزجاجة"},
+  {sp:null, de:"der Koffer", ar:"الحقيبة"},
+  {sp:null, de:"das Würstchen / das Würstel", ar:"النقانق (سجق صغير)"},
+  {sp:null, de:"der Kindergarten", ar:"روضة الأطفال"},
+  {sp:null, de:"das Butterbrot", ar:"ساندويتش الزبدة"},
+  {sp:null, de:"der Kranke", ar:"المريض"},
+  {sp:null, de:"die Autobahn", ar:"الطريق السريع"},
+  {sp:null, de:"die Nudeln", ar:"المعكرونة"},
+];
+
+/* ===================== DATA: Kapitel 2 ===================== */
+const ITEMS_K2 = [
+  {sp:"A", de:"Was machst du gern?", ar:"ماذا تحب أن تفعل؟"},
+  {sp:"B", de:"Ich reise gern.", ar:"أحب السفر."},
+  {sp:"A", de:"Was machst du nicht gern?", ar:"ماذا لا تحب أن تفعل؟"},
+  {sp:"B", de:"Ich singe nicht so gern.", ar:"لا أحب الغناء كثيرًا."},
+  {sp:"A", de:"Hörst du gern Musik?", ar:"هل تحب سماع الموسيقى؟"},
+  {sp:"B", de:"Ja, sehr gern.", ar:"نعم، كثيرًا."},
+  {sp:"A", de:"Liest du gern?", ar:"هل تحب القراءة؟"},
+  {sp:"B", de:"Es geht so.", ar:"إلى حد ما."},
+  {sp:"A", de:"Spielst du gern Fußball?", ar:"هل تحب لعب كرة القدم؟"},
+  {sp:"B", de:"Nein. Ich spiele gern Tennis.", ar:"لا. أحب لعب التنس."},
+  {sp:"A", de:"Joggst du auch?", ar:"هل تمارس الجري أيضًا؟"},
+  {sp:"B", de:"Ja, ich jogge.", ar:"نعم، أنا أمارس الجري."},
+  {sp:"A", de:"Joggen ist super! Gehen wir zusammen?", ar:"الجري رائع! هل نذهب معًا؟"},
+  {sp:"B", de:"Ja, gern. Wann?", ar:"نعم، بكل سرور. متى؟"},
+  {sp:"A", de:"Am Mittwoch?", ar:"يوم الأربعاء؟"},
+  {sp:"B", de:"Nein, das geht leider nicht.", ar:"لا، للأسف هذا غير ممكن."},
+  {sp:"A", de:"Und am Freitag?", ar:"وماذا عن يوم الجمعة؟"},
+  {sp:"B", de:"Ja, am Freitag ist gut.", ar:"نعم، يوم الجمعة مناسب."},
+
+  {sp:"A", de:"Gehen wir ins Kino?", ar:"هل نذهب إلى السينما؟"},
+  {sp:"B", de:"Ja, gern.", ar:"نعم، بكل سرور."},
+  {sp:"A", de:"Wann gehen wir ins Kino?", ar:"متى نذهب إلى السينما؟"},
+  {sp:"B", de:"Am Montag.", ar:"يوم الاثنين."},
+  {sp:"A", de:"Gehen wir am Sonntag?", ar:"هل نذهب يوم الأحد؟"},
+  {sp:"B", de:"Was machen wir am Sonntag?", ar:"ماذا سنفعل يوم الأحد؟"},
+  {sp:"A", de:"Wir gehen ins Kino.", ar:"سنذهب إلى السينما."},
+  {sp:"B", de:"Gehen wir dann ins Café?", ar:"هل نذهب بعدها إلى المقهى؟"},
+  {sp:"A", de:"Oder ins Restaurant?", ar:"أم إلى المطعم؟"},
+  {sp:"B", de:"Gehen wir ins Schwimmbad?", ar:"هل نذهب إلى المسبح؟"},
+  {sp:"A", de:"Und ins Stadion?", ar:"وإلى الملعب؟"},
+  {sp:"B", de:"Und ins Theater?", ar:"وإلى المسرح؟"},
+  {sp:"A", de:"Und ins Museum?", ar:"وإلى المتحف؟"},
+  {sp:"B", de:"Ja, super!", ar:"نعم، رائع!"},
+
+  {sp:"A", de:"Was bist du von Beruf?", ar:"ما هي مهنتك؟"},
+  {sp:"B", de:"Ich bin Studentin.", ar:"أنا طالبة."},
+  {sp:"A", de:"Was machst du?", ar:"ماذا تفعلين؟"},
+  {sp:"B", de:"Ich studiere.", ar:"أنا أدرس."},
+  {sp:"A", de:"Wann arbeitest du?", ar:"متى تعملين؟"},
+  {sp:"B", de:"Am Nachmittag lerne ich, und am Samstag arbeite ich im Kino.", ar:"في فترة بعد الظهر أذاكر، وفي يوم السبت أعمل في السينما."},
+  {sp:"A", de:"Wann hast du frei?", ar:"متى تكونين متفرغة؟"},
+  {sp:"B", de:"Ich habe frei am Freitag.", ar:"لدي إجازة يوم الجمعة."},
+  {sp:"A", de:"Bist du Ingenieur?", ar:"هل أنت مهندس؟"},
+  {sp:"B", de:"Nein, ich bin Kellner. Ich arbeite in einem Restaurant.", ar:"لا، أنا نادل. أعمل في مطعم."},
+  {sp:"A", de:"Wann arbeitest du?", ar:"متى تعمل؟"},
+  {sp:"B", de:"Ich arbeite am Abend und am Wochenende.", ar:"أعمل في المساء وفي عطلة نهاية الأسبوع."},
+  {sp:"A", de:"Hast du frei?", ar:"هل لديك إجازة؟"},
+  {sp:"B", de:"Montag und Dienstag sind frei.", ar:"الاثنين والثلاثاء إجازة."},
+  {sp:"A", de:"Bist du Taxifahrer?", ar:"هل أنت سائق تاكسي؟"},
+  {sp:"B", de:"Ja, ich arbeite bei „Taxi-Zentral\".", ar:"نعم، أعمل في «تاكسي-تسنترال»."},
+  {sp:"A", de:"Was machst du?", ar:"ماذا تفعل؟"},
+  {sp:"B", de:"Ich warte viel, und ich lese Bücher.", ar:"أنتظر كثيرًا، وأقرأ الكتب."},
+  {sp:"A", de:"Bist du Arzt?", ar:"هل أنت طبيب؟"},
+  {sp:"B", de:"Nein, ich bin Krankenpfleger. Ich arbeite in einem Krankenhaus.", ar:"لا، أنا ممرض. أعمل في مستشفى."},
+  {sp:"A", de:"Arbeitest du nachts?", ar:"هل تعمل ليلًا؟"},
+  {sp:"B", de:"Ja, wir arbeiten auch nachts und am Wochenende.", ar:"نعم، نعمل أيضًا ليلًا وفي عطلة نهاية الأسبوع."},
+  {sp:"A", de:"Machst du ein Praktikum?", ar:"هل تقوم بتدريب عملي؟"},
+  {sp:"B", de:"Nein, ich studiere.", ar:"لا، أنا أدرس."},
+  {sp:"A", de:"Bist du Lehrerin?", ar:"هل أنتِ معلمة؟"},
+  {sp:"B", de:"Nein, ich bin Verkäuferin.", ar:"لا، أنا بائعة."},
+  {sp:"A", de:"Bist du Architekt?", ar:"هل أنت مهندس معماري؟"},
+  {sp:"B", de:"Nein, ich bin Informatiker.", ar:"لا، أنا متخصص معلوماتية."},
+  {sp:"A", de:"Bist du Friseurin?", ar:"هل أنتِ مصففة شعر؟"},
+  {sp:"B", de:"Ja, ich bin Friseurin.", ar:"نعم، أنا مصففة شعر."},
+  {sp:"A", de:"Sind Sie auch Studentin?", ar:"هل أنتِ طالبة أيضًا؟ (رسمي)"},
+  {sp:"B", de:"Nein, ich bin keine Studentin.", ar:"لا، أنا لست طالبة."},
+  {sp:"A", de:"Arbeitet er im Krankenhaus?", ar:"هل يعمل في المستشفى؟"},
+  {sp:"B", de:"Nein, er studiert.", ar:"لا، هو يدرس."},
+  {sp:"A", de:"Joggt sie gern?", ar:"هل تحب الجري؟"},
+  {sp:"B", de:"Ja, sie joggt gern.", ar:"نعم، هي تحب الجري."},
+  {sp:"A", de:"Arbeitet sie heute am Nachmittag?", ar:"هل تعمل اليوم بعد الظهر؟"},
+  {sp:"B", de:"Nein, sie arbeitet heute nicht.", ar:"لا، هي لا تعمل اليوم."},
+
+  {sp:"A", de:"Ist der Stift blau?", ar:"هل القلم أزرق؟"},
+  {sp:"B", de:"Ja, der Stift ist blau.", ar:"نعم، القلم أزرق."},
+  {sp:"A", de:"Ist das Buch grün?", ar:"هل الكتاب أخضر؟"},
+  {sp:"B", de:"Ja, das Buch ist grün.", ar:"نعم، الكتاب أخضر."},
+  {sp:"A", de:"Ist die Tablette rot?", ar:"هل الحبة (الدواء) حمراء؟"},
+  {sp:"B", de:"Ja, die Tablette ist rot.", ar:"نعم، الحبة حمراء."},
+  {sp:"A", de:"Wo ist der Computer?", ar:"أين الكمبيوتر؟"},
+  {sp:"B", de:"Der Computer ist hier.", ar:"الكمبيوتر هنا."},
+  {sp:"A", de:"Wo ist das Geld?", ar:"أين المال؟"},
+  {sp:"B", de:"Das Geld ist hier.", ar:"المال هنا."},
+  {sp:"A", de:"Wo ist die Straße?", ar:"أين الشارع؟"},
+  {sp:"B", de:"Die Straße ist da.", ar:"الشارع هناك."},
+  {sp:"A", de:"Wo ist das Glas?", ar:"أين الكوب؟"},
+  {sp:"B", de:"Das Glas ist da.", ar:"الكوب هناك."},
+  {sp:"A", de:"Wo ist das Medikament?", ar:"أين الدواء؟"},
+  {sp:"B", de:"Das Medikament ist da.", ar:"الدواء هناك."},
+  {sp:"A", de:"Wo ist die Rechnung?", ar:"أين الفاتورة؟"},
+  {sp:"B", de:"Die Rechnung ist da.", ar:"الفاتورة هناك."},
+  {sp:"A", de:"Wo ist der Schlüssel?", ar:"أين المفتاح؟"},
+  {sp:"B", de:"Der Schlüssel ist da.", ar:"المفتاح هناك."},
+  {sp:"A", de:"Wo ist die Spritze?", ar:"أين الحقنة؟"},
+  {sp:"B", de:"Die Spritze ist da.", ar:"الحقنة هناك."},
+  {sp:"A", de:"Ist das Auto hier?", ar:"هل السيارة هنا؟"},
+  {sp:"B", de:"Ja, das Auto ist hier.", ar:"نعم، السيارة هنا."},
+  {sp:"A", de:"Ist die Studentin an der Universität?", ar:"هل الطالبة في الجامعة؟"},
+  {sp:"B", de:"Ja, sie ist an der Universität.", ar:"نعم، هي في الجامعة."},
+  {sp:"A", de:"Arbeitet der Kellner im Restaurant?", ar:"هل يعمل النادل في المطعم؟"},
+  {sp:"B", de:"Ja, er arbeitet im Restaurant.", ar:"نعم، هو يعمل في المطعم."},
+  {sp:"A", de:"Ist die Patientin im Krankenhaus?", ar:"هل المريضة في المستشفى؟"},
+  {sp:"B", de:"Ja, der Arzt ist auch im Krankenhaus.", ar:"نعم، الطبيب أيضًا في المستشفى."},
+  {sp:"A", de:"Fährt der Taxifahrer das Taxi?", ar:"هل يقود سائق التاكسي التاكسي؟"},
+  {sp:"B", de:"Ja, er fährt das Taxi.", ar:"نعم، هو يقود التاكسي."},
+
+  {sp:"A", de:"Was ist der Plural von \"das Buch\"?", ar:"ما هو جمع «das Buch» (الكتاب)؟"},
+  {sp:"B", de:"Die Bücher.", ar:"الكتب."},
+  {sp:"A", de:"Und von \"der Kilometer\"?", ar:"وجمع «der Kilometer» (كيلومتر)؟"},
+  {sp:"B", de:"Die Kilometer.", ar:"كيلومترات."},
+  {sp:"A", de:"Und von \"die Stunde\"?", ar:"وجمع «die Stunde» (الساعة)؟"},
+  {sp:"B", de:"Die Stunden.", ar:"الساعات."},
+  {sp:"A", de:"Und von \"der Tag\"?", ar:"وجمع «der Tag» (اليوم)؟"},
+  {sp:"B", de:"Die Tage.", ar:"الأيام."},
+  {sp:"A", de:"Und von \"der Arzt\"?", ar:"وجمع «der Arzt» (الطبيب)؟"},
+  {sp:"B", de:"Die Ärzte.", ar:"الأطباء."},
+  {sp:"A", de:"Und von \"das Auto\"?", ar:"وجمع «das Auto» (السيارة)؟"},
+  {sp:"B", de:"Die Autos.", ar:"السيارات."},
+  {sp:"A", de:"Und von \"das Restaurant\"?", ar:"وجمع «das Restaurant» (المطعم)؟"},
+  {sp:"B", de:"Die Restaurants.", ar:"المطاعم."},
+
+  {sp:"A", de:"Machst du Basketball, Fußball, Karate, Tennis, Yoga oder Zumba?", ar:"هل تمارس كرة السلة، أو كرة القدم، أو الكاراتيه، أو التنس، أو اليوغا، أو الزومبا؟"},
+  {sp:"B", de:"Ich mache Yoga.", ar:"أنا أمارس اليوغا."},
+  {sp:"A", de:"Schreibst du deinen Vornamen und deinen Familiennamen ins Formular?", ar:"هل تكتب اسمك الأول واسم عائلتك في الاستمارة؟"},
+  {sp:"B", de:"Ja.", ar:"نعم."},
+  {sp:"A", de:"Schreibst du dein Geschlecht: weiblich, männlich oder keine Angabe?", ar:"هل تكتب جنسك: أنثى، ذكر، أو بدون تحديد؟"},
+  {sp:"B", de:"Ja, das kreuze ich an.", ar:"نعم، أضع علامة عليه."},
+  {sp:"A", de:"Schreibst du dein Geburtsdatum und deinen Geburtsort?", ar:"هل تكتب تاريخ ميلادك ومكان ميلادك؟"},
+  {sp:"B", de:"Ja.", ar:"نعم."},
+  {sp:"A", de:"Schreibst du deine E-Mail und deine Telefonnummer?", ar:"هل تكتب بريدك الإلكتروني ورقم هاتفك؟"},
+  {sp:"B", de:"Ja.", ar:"نعم."},
+  {sp:"A", de:"Schreibst du deine Adresse, Straße und Hausnummer?", ar:"هل تكتب عنوانك، الشارع، ورقم المنزل؟"},
+  {sp:"B", de:"Ja.", ar:"نعم."},
+  {sp:"A", de:"Schreibst du deine Postleitzahl und deinen Wohnort?", ar:"هل تكتب الرمز البريدي ومكان سكنك؟"},
+  {sp:"B", de:"Ja.", ar:"نعم."},
+  {sp:"A", de:"Schreibst du deine Schule oder Firma?", ar:"هل تكتب مدرستك أو شركتك؟"},
+  {sp:"B", de:"Ja.", ar:"نعم."},
+  {sp:"A", de:"Schreibst du deinen Kurs und deinen Tag?", ar:"هل تكتب الكورس الخاص بك واليوم؟"},
+  {sp:"B", de:"Ja, Yoga und Montag.", ar:"نعم، يوغا ويوم الاثنين."},
+
+  {sp:"A", de:"Kochst du gern?", ar:"هل تحب الطبخ؟"},
+  {sp:"B", de:"Ja, ich koche gern. Kocht ihr auch gern?", ar:"نعم، أحب الطبخ. هل تحبون الطبخ أيضًا؟"},
+  {sp:"A", de:"Ja, wir kochen gern. Arbeitet er heute?", ar:"نعم، نحب الطبخ. هل يعمل هو اليوم؟"},
+  {sp:"B", de:"Ja, er arbeitet heute.", ar:"نعم، هو يعمل اليوم."},
+  {sp:"A", de:"Arbeiten Sie auch heute?", ar:"هل تعملين أنتِ أيضًا اليوم؟ (رسمي)"},
+  {sp:"B", de:"Ja, ich arbeite auch heute.", ar:"نعم، أنا أعمل اليوم أيضًا."},
+  {sp:"A", de:"Liest sie ein Buch?", ar:"هل تقرأ كتابًا؟"},
+  {sp:"B", de:"Ja, sie liest ein Buch.", ar:"نعم، هي تقرأ كتابًا."},
+  {sp:"A", de:"Sprichst du gut?", ar:"هل تتحدث جيدًا؟"},
+  {sp:"B", de:"Ja, ich spreche gut. Sprecht ihr auch gut?", ar:"نعم، أتحدث جيدًا. هل تتحدثون أنتم أيضًا جيدًا؟"},
+  {sp:"A", de:"Ja, wir sprechen gut. Bist du Student?", ar:"نعم، نتحدث جيدًا. هل أنت طالب؟"},
+  {sp:"B", de:"Nein, ich bin Studentin.", ar:"لا، أنا طالبة."},
+  {sp:"A", de:"Seid ihr Studenten?", ar:"هل أنتم طلاب؟"},
+  {sp:"B", de:"Ja, wir sind Studenten.", ar:"نعم، نحن طلاب."},
+  {sp:"A", de:"Hast du ein Buch?", ar:"هل لديك كتاب؟"},
+  {sp:"B", de:"Ja, ich habe ein Buch. Habt ihr auch Bücher?", ar:"نعم، لدي كتاب. هل لديكم كتب أيضًا؟"},
+  {sp:"A", de:"Ja, wir haben Bücher.", ar:"نعم، لدينا كتب."},
+];
+
+/* ===================== DATA: Numbers 0-100 (shuffled) ===================== */
+const ONES = ["null","eins","zwei","drei","vier","fünf","sechs","sieben","acht","neun","zehn",
+  "elf","zwölf","dreizehn","vierzehn","fünfzehn","sechzehn","siebzehn","achtzehn","neunzehn"];
+const TENS = {20:"zwanzig",30:"dreißig",40:"vierzig",50:"fünfzig",60:"sechzig",70:"siebzig",80:"achtzig",90:"neunzig"};
+function germanNumberWord(n){
+  if(n <= 19) return ONES[n];
+  if(n === 100) return "hundert";
+  const t = Math.floor(n/10)*10, o = n%10;
+  if(o === 0) return TENS[t];
+  return (o===1 ? "ein" : ONES[o]) + "und" + TENS[t];
+}
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+const NUMBERS = shuffle(Array.from({length:101}, (_,n)=>({digit:String(n), word:germanNumberWord(n)})));
+
+/* ===================== state ===================== */
+let chapter = 'l1';     // 'l1' | 'k2' | 'numbers'
+let direction = 'ar-de'; // only relevant for l1 / k2
+let pointer = { l1: 0, k2: 0, numbers: 0 };
+
+function stateKey(){ return chapter === 'numbers' ? 'numbers' : `${chapter}_${direction}`; }
+function makeState(len){ return Array.from({length:len}, ()=>({status:null, typed:"", flagged:false})); }
+const STATE = {
+  'l1_ar-de': makeState(ITEMS_L1.length),
+  'l1_de-ar': makeState(ITEMS_L1.length),
+  'k2_ar-de': makeState(ITEMS_K2.length),
+  'k2_de-ar': makeState(ITEMS_K2.length),
+  'numbers':  makeState(NUMBERS.length),
+};
+
+function data(){
+  if(chapter === 'numbers') return NUMBERS;
+  return chapter === 'l1' ? ITEMS_L1 : ITEMS_K2;
+}
+function curState(){ return STATE[stateKey()]; }
+function current(){ return pointer[chapter]; }
+function setCurrent(i){ pointer[chapter] = i; }
+
+const el = (id)=>document.getElementById(id);
+const promptEl = el('prompt');
+const speakerEl = el('speaker');
+const inputEl = el('answer-input');
+const feedbackEl = el('feedback');
+const answerLabelEl = el('answer-label');
+const progressText = el('progress-text');
+const scoreText = el('score-text');
+const progressFill = el('progress-fill');
+const dotmap = el('dotmap');
+const answerSpeakBtn = el('answer-speak-btn');
+const dirSwitch = el('dir-switch');
+const flagBtn = el('flag-btn');
+const resetBtn = el('reset-btn');
+
+/* ===================== speech ===================== */
+let deVoice = null;
+let voiceNoticeShown = false;
+function pickGermanVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices() || [];
+  // prefer an exact de-DE voice, then any German variant (de-AT, de-CH...), then anything starting with "de"
+  deVoice = voices.find(v => v.lang && v.lang.toLowerCase() === 'de-de')
+        || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de-'))
+        || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de'))
+        || null;
+  return deVoice;
+}
+if('speechSynthesis' in window){
+  pickGermanVoice();
+  window.speechSynthesis.onvoiceschanged = pickGermanVoice;
+}
+function speakGerman(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+
+  const doSpeak = ()=>{
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE';
+    const voice = pickGermanVoice(); // re-check live, voices list can load late
+    if(voice){ u.voice = voice; }
+    else if(!voiceNoticeShown){
+      voiceNoticeShown = true;
+      answerLabelEl.title = 'لا يوجد صوت ألماني مثبت على جهازك، فالنطق سيكون بلهجة افتراضية. ثبّت لغة ألمانية في إعدادات النطق (Text-to-Speech) بجهازك للحصول على نطق ألماني صحيح.';
+    }
+    u.rate = 0.92;
+    window.speechSynthesis.speak(u);
+  };
+
+  // Chrome sometimes returns an empty voice list on first call; give it one retry shortly after.
+  if(window.speechSynthesis.getVoices().length === 0){
+    setTimeout(doSpeak, 150);
+  } else {
+    doSpeak();
+  }
+}
+function makeSpeakButton(text, small){
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'speak-btn' + (small ? ' small' : '');
+  btn.setAttribute('aria-label', 'نطق بالألمانية');
+  btn.textContent = '🔊';
+  btn.addEventListener('click', (e)=>{ e.stopPropagation(); speakGerman(text); });
+  return btn;
+}
+
+/* ===================== normalization ===================== */
+function normalize(s){
+  return s
+    .toLowerCase()
+    .replace(/[!?.,;:؟،؛«»"'ʼ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function normalizeDigits(s){
+  return (s.match(/\d+/g) || []).join('');
+}
+
+/* ===================== dots ===================== */
+function buildDots(){
+  dotmap.innerHTML = "";
+  const arr = data();
+  arr.forEach((it, i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.textContent = i+1;
+    d.addEventListener('click', ()=>{ setCurrent(i); render(); });
+    dotmap.appendChild(d);
+  });
+}
+function updateDots(){
+  const dots = dotmap.children;
+  const idx = current();
+  const st = curState();
+  for(let i=0;i<data().length;i++){
+    const s = st[i].status;
+    let cls = 'dot' + (i===idx ? ' current' : '') +
+      (s==='correct' ? ' correct' : s==='incorrect' ? ' incorrect' : '');
+    if(st[i].flagged){ cls += ' flagged'; }
+    dots[i].className = cls;
+  }
+}
+function score(){ return curState().filter(s=>s.status==='correct').length; }
+
+/* ===================== render ===================== */
+function correctAnswer(){
+  const idx = current();
+  if(chapter === 'numbers'){ return NUMBERS[idx].word; }
+  const item = data()[idx];
+  return direction === 'ar-de' ? item.de : item.ar;
+}
+
+function render(){
+  const idx = current();
+  const arr = data();
+  const s = curState()[idx];
+
+  promptEl.classList.toggle('numbers-prompt', chapter==='numbers');
+  promptEl.innerHTML = '';
+  const promptText = document.createElement('span');
+  promptText.className = 'prompt-text';
+
+  if(chapter === 'numbers'){
+    speakerEl.style.display = 'none';
+    const item = NUMBERS[idx];
+    promptEl.setAttribute('dir','ltr');
+    promptText.textContent = item.digit;
+    promptEl.appendChild(promptText);
+    answerLabelEl.textContent = 'اكتب الرقم بالكلمة الألمانية:';
+    inputEl.setAttribute('dir','ltr');
+    inputEl.placeholder = 'مثال: sieben';
+    answerSpeakBtn.style.display = 'inline-flex';
+    answerSpeakBtn.onclick = ()=> speakGerman(correctAnswer());
+  } else {
+    const item = arr[idx];
+    if(item.sp){ speakerEl.style.display='inline-block'; speakerEl.textContent = item.sp; }
+    else { speakerEl.style.display='none'; }
+
+    if(direction === 'ar-de'){
+      promptEl.setAttribute('dir','rtl');
+      promptText.textContent = item.ar;
+      promptEl.appendChild(promptText);
+      answerLabelEl.textContent = 'اكتب الترجمة بالألمانية:';
+      inputEl.setAttribute('dir','ltr');
+      inputEl.placeholder = 'Antwort auf Deutsch …';
+      answerSpeakBtn.style.display = 'inline-flex';
+      answerSpeakBtn.onclick = ()=> speakGerman(correctAnswer());
+    } else {
+      promptEl.setAttribute('dir','ltr');
+      promptText.textContent = item.de;
+      promptEl.appendChild(promptText);
+      promptEl.appendChild(makeSpeakButton(item.de));
+      answerLabelEl.textContent = 'اكتب المعنى بالعربية:';
+      inputEl.setAttribute('dir','rtl');
+      inputEl.placeholder = 'اكتب المعنى هنا…';
+      answerSpeakBtn.style.display = 'none';
+    }
+  }
+
+  inputEl.value = s.typed || "";
+  inputEl.classList.remove('right','wrong');
+  feedbackEl.classList.remove('show','good','bad');
+  feedbackEl.innerHTML = "";
+
+  if(s.status === 'correct'){
+    inputEl.classList.add('right');
+  } else if(s.status === 'incorrect'){
+    inputEl.classList.add('wrong');
+    showFeedback(false, s.typed, correctAnswer());
+  }
+
+  progressText.textContent = `السؤال ${idx+1} من ${arr.length}`;
+  scoreText.textContent = `صحيح: ${score()}`;
+  progressFill.style.width = `${((idx+1)/arr.length)*100}%`;
+
+  el('prev-btn').disabled = idx === 0;
+  el('next-btn').textContent = (idx === arr.length-1) ? 'انتهى ✓' : 'التالي ▶';
+
+  updateDots();
+  updateFlagBtn();
+  inputEl.focus();
+}
+
+function updateFlagBtn(){
+  const idx = current();
+  const flagged = curState()[idx].flagged;
+  flagBtn.classList.toggle('on', !!flagged);
+  flagBtn.textContent = flagged ? '🚩 مُعلَّم للمراجعة — دوس لإلغاء العلامة' : '🚩 علّم السؤال ده للمراجعة';
+}
+
+/* ===================== word-by-word glossary (German -> Arabic) ===================== */
+const GLOSSARY = {
+  // pronouns / basics
+  "ich":"أنا", "du":"أنت", "er":"هو", "sie":"هي / هم / حضرتك (حسب السياق)", "es":"هو (محايد)",
+  "wir":"نحن", "ihr":"أنتم", "mein":"ملكي", "meine":"ملكي", "dein":"ملكك", "deine":"ملكك", "deinen":"ملكك",
+  "ihre":"ملكك (رسمي)", "ihr's": "ملكك",
+  "das":"هذا / الـ", "der":"الـ (مذكر)", "die":"الـ (مؤنث/جمع)", "den":"الـ (حالة النصب)",
+  "und":"و", "oder":"أو", "auch":"أيضًا", "nicht":"لا / ليس", "kein":"لا يوجد (مذكر)", "keine":"لا يوجد (مؤنث)",
+  "ja":"نعم", "nein":"لا", "bitte":"من فضلك", "danke":"شكرًا", "sehr":"جدًا", "gut":"جيد", "so":"هكذا",
+  "dann":"بعد ذلك", "noch":"لسه / مرة أخرى", "viel":"كثير", "hier":"هنا", "da":"هناك", "zusammen":"معًا",
+  "wann":"متى", "wie":"كيف", "was":"ماذا", "wer":"من", "woher":"من أين", "wo":"أين", "welche":"أي",
+  "heute":"اليوم", "leider":"للأسف", "super":"رائع", "bald":"قريبًا", "einmal":"مرة واحدة",
+  "langsamer":"أبطأ", "entschuldigung":"عفوًا / آسف", "gern":"بكل سرور / يحب أن يفعل",
+  "bisschen":"قليلاً", "dir":"لك (حالة الجر)", "ein":"واحد / أداة تنكير", "einem":"لـ (أداة تنكير، حالة الجر)",
+
+  // verbs (as they appear conjugated)
+  "machst":"تفعل", "machen":"نفعل / يفعلون", "mache":"أفعل",
+  "reise":"أسافر", "singe":"أغني",
+  "hörst":"تسمع",
+  "liest":"يقرأ / تقرأ", "lese":"أقرأ",
+  "spiele":"ألعب", "spielst":"تلعب",
+  "jogge":"أمارس الجري", "joggst":"تمارس الجري", "joggt":"يمارس الجري / تمارس الجري", "joggen":"الجري (يجري)",
+  "gehen":"نذهب / يذهبون", "geht":"يذهب / يسير", "geht's":"الحال (تعبير: كيف الحال)",
+  "komme":"آتي", "kommst":"تأتي", "kommt":"يأتي / تأتي", "kommen":"يأتون / نأتي",
+  "bin":"أكون (أنا)", "bist":"تكون (أنت)", "ist":"يكون / هو", "sind":"نكون / يكونون", "seid":"تكونون (أنتم)",
+  "heiße":"اسمي", "heißt":"اسمك / يُدعى", "heißen":"يُدعى / اسمكم",
+  "wohne":"أسكن", "wohnst":"تسكن", "wohnt":"يسكن / تسكن", "wohnen":"نسكن / يسكنون",
+  "spreche":"أتحدث", "sprichst":"تتحدث", "spricht":"يتحدث / تتحدث", "sprechen":"نتحدث / يتحدثون", "sprecht":"تتحدثون",
+  "studiere":"أدرس", "studiert":"يدرس",
+  "arbeite":"أعمل", "arbeitest":"تعمل", "arbeitet":"يعمل / تعمل", "arbeiten":"نعمل / يعملون",
+  "lerne":"أتعلم / أذاكر", "lernt":"يتعلم / تتعلم", "koche":"أطبخ", "kochen":"نطبخ / يطبخون", "kochst":"تطبخ", "kocht":"يطبخ / تطبخون",
+  "habe":"لدي", "hast":"لديك", "habt":"لديكم", "haben":"لدينا / لديهم",
+  "warte":"أنتظر", "fährt":"يقود / تسير",
+  "schreibst":"تكتب", "kreuze":"أضع علامة عليه", "verstehe":"أفهم",
+
+  // colors / adjectives
+  "blau":"أزرق", "grün":"أخضر", "rot":"أحمر", "weiblich":"أنثى", "männlich":"ذكر", "frei":"إجازة / متفرغ",
+
+  // greetings / farewells
+  "hallo":"مرحبًا", "tschüs":"مع السلامة", "ciao":"سلام / وداعًا", "auf":"إلى (جزء من: إلى اللقاء)",
+  "wiedersehen":"اللقاء", "bis":"حتى", "guten":"طاب (تحية)", "gute":"طيبة (تحية)",
+
+  // prepositions
+  "am":"في (يوم)", "an":"في / على", "aus":"من", "bei":"عند / لدى", "im":"في الـ", "in":"في", "ins":"إلى الـ", "von":"من",
+
+  // days
+  "montag":"الاثنين", "dienstag":"الثلاثاء", "mittwoch":"الأربعاء", "freitag":"الجمعة",
+  "samstag":"السبت", "sonntag":"الأحد", "wochenende":"عطلة نهاية الأسبوع",
+  "morgen":"صباح", "abend":"مساء", "nacht":"ليل", "nachts":"ليلًا", "nachmittag":"بعد الظهر",
+
+  // nouns / vocab
+  "adresse":"عنوان", "angabe":"بيان / تحديد", "arzt":"طبيب", "ärzte":"أطباء", "architekt":"مهندس معماري",
+  "auto":"سيارة", "autos":"سيارات", "autobahn":"طريق سريع", "basketball":"كرة السلة", "beruf":"مهنة",
+  "buch":"كتاب", "bücher":"كتب", "butterbrot":"ساندويتش زبدة", "café":"مقهى", "computer":"كمبيوتر",
+  "e-mail":"بريد إلكتروني", "e-mail-adresse":"عنوان البريد الإلكتروني",
+  "familiennamen":"اسم العائلة", "firma":"شركة", "flasche":"زجاجة", "formular":"استمارة",
+  "frau":"سيدة", "friseurin":"مصففة شعر", "fußball":"كرة القدم",
+  "geburtsdatum":"تاريخ الميلاد", "geburtsort":"مكان الميلاد", "geld":"مال", "geschlecht":"الجنس (نوع)",
+  "glas":"كوب", "handtuch":"منشفة", "hausnummer":"رقم المنزل", "herr":"سيد",
+  "informatiker":"متخصص معلوماتية", "ingenieur":"مهندس", "karate":"الكاراتيه", "kellner":"نادل",
+  "kilometer":"كيلومتر", "kindergarten":"روضة أطفال", "kino":"سينما", "koffer":"حقيبة",
+  "krankenhaus":"مستشفى", "krankenpfleger":"ممرض", "kranke":"مريض", "kurs":"دورة / كورس",
+  "lehrerin":"معلمة", "medikament":"دواء", "museum":"متحف", "musik":"موسيقى", "name":"اسم",
+  "patientin":"مريضة", "plural":"الجمع (نحو)", "postleitzahl":"الرمز البريدي", "praktikum":"تدريب عملي",
+  "rechnung":"فاتورة", "restaurant":"مطعم", "restaurants":"مطاعم", "schlüssel":"مفتاح", "schule":"مدرسة",
+  "schwimmbad":"مسبح", "sprachen":"لغات", "spritze":"حقنة", "stadion":"ملعب", "stift":"قلم",
+  "straße":"شارع", "student":"طالب", "studenten":"طلاب", "studentin":"طالبة", "stunde":"ساعة", "stunden":"ساعات",
+  "tablette":"حبة دواء", "tag":"يوم", "tage":"أيام", "taxi":"تاكسي", "taxifahrer":"سائق تاكسي",
+  "telefonnummer":"رقم الهاتف", "tennis":"التنس", "theater":"مسرح", "universität":"جامعة",
+  "verkäuferin":"بائعة", "vornamen":"الاسم الأول", "wohnort":"مكان السكن",
+  "würstchen":"نقانق", "würstel":"نقانق", "yoga":"يوغا", "zumba":"زومبا",
+  "at-zeichen":"علامة @", "punkt":"نقطة", "minus":"شرطة", "unterstrich":"شرطة سفلية",
+
+  // languages
+  "arabisch":"العربية", "deutsch":"الألمانية", "englisch":"الإنجليزية", "französisch":"الفرنسية",
+  "italienisch":"الإيطالية", "japanisch":"اليابانية", "portugiesisch":"البرتغالية", "russisch":"الروسية",
+  "spanisch":"الإسبانية",
+
+  // countries / cities
+  "österreich":"النمسا", "deutschland":"ألمانيا", "schweiz":"سويسرا", "japan":"اليابان",
+  "algerien":"الجزائر", "brasilien":"البرازيل", "usa":"الولايات المتحدة", "ukraine":"أوكرانيا",
+  "spanien":"إسبانيا", "türkei":"تركيا", "frankfurt":"فرانكفورت", "salzburg":"سالزبورغ",
+  "berlin":"برلين", "tokio":"طوكيو", "köln":"كولن", "lugano":"لوغانو", "paris":"باريس",
+  "zürich":"زيورخ", "san":"سان", "francisco":"فرانسيسكو",
+
+  // personal names (transliteration only)
+  "boris":"بوريس (اسم)", "walder":"فالدر (اسم)", "saki":"ساكي (اسم)", "tanaka":"تاناكا (اسم)",
+  "kateb":"كاتب (اسم)", "brahim":"إبراهيم (اسم)", "olivia":"أوليفيا (اسم)", "miller":"ميلر (اسم)",
+  "gabriel":"غابرييل (اسم)", "santos":"سانتوس (اسم)", "alessia":"أليسيا (اسم)", "conti":"كونتي (اسم)",
+  "nina":"نينا (اسم)", "niklas":"نيكلاس (اسم)", "julia":"يوليا (اسم)", "oliver":"أوليفر (اسم)",
+  "hansen":"هانزن (اسم)", "weber":"فيبر (اسم)", "kowalski":"كوفالسكي (اسم)", "selina":"سيلينا (اسم)",
+  "lang":"لانغ (اسم)", "jan":"يان (اسم)", "alexis":"أليكسيس (اسم)", "barbos":"باربوس (اسم)",
+  "taxi-zentral":"تاكسي-تسنترال (اسم شركة)",
+};
+
+function glossWord(raw){
+  // strip surrounding punctuation/quotes but keep internal hyphens, apostrophes, @ . _
+  const cleaned = raw.replace(/^[„"«»'".,!?;:()]+|[„"«»'".,!?;:()]+$/g, '');
+  if(!cleaned) return null;
+  const key = cleaned.toLowerCase();
+  if(key.includes('@')) return {word: cleaned, meaning:"بريد إلكتروني"};
+  const meaning = GLOSSARY[key];
+  if(meaning) return {word: cleaned, meaning};
+  // likely a proper noun (capitalized, unknown)
+  if(/^[A-ZÄÖÜ]/.test(cleaned)) return {word: cleaned, meaning:"اسم علم"};
+  return {word: cleaned, meaning:"—"};
+}
+
+function glossSentence(text){
+  const tokens = text.split(/\s+/).filter(Boolean);
+  return tokens.map(glossWord).filter(Boolean);
+}
+
+function showFeedback(isCorrect, typed, correct){
+  feedbackEl.classList.add('show', isCorrect ? 'good' : 'bad');
+  feedbackEl.innerHTML = '';
+  const isGermanAnswer = (chapter === 'numbers') || (direction === 'ar-de');
+
+  if(isCorrect){
+    const row = document.createElement('div');
+    row.className = 'row answer-row-fb';
+    row.innerHTML = `✅ <b>إجابة صحيحة!</b>&nbsp;ينتقل السؤال التالي تلقائيًا…`;
+    if(isGermanAnswer){ row.appendChild(makeSpeakButton(correct, true)); }
+    feedbackEl.appendChild(row);
+  } else {
+    const row1 = document.createElement('div');
+    row1.className = 'row';
+    row1.innerHTML = `<span class="tag">إجابتك:</span> ${typed ? escapeHtml(typed) : '<i>(فارغ)</i>'}`;
+
+    const row2 = document.createElement('div');
+    row2.className = 'row answer-row-fb';
+    row2.innerHTML = `<span class="tag">الإجابة الصحيحة:</span> <b>${escapeHtml(correct)}</b>`;
+    if(isGermanAnswer){ row2.appendChild(makeSpeakButton(correct, true)); }
+
+    const row3 = document.createElement('div');
+    row3.className = 'row';
+    row3.innerHTML = `<span class="tag">تصحيح:</span> قارن إجابتك بالإجابة الصحيحة أعلاه، ثم أعد المحاولة حتى تكتبها صح.`;
+
+    feedbackEl.appendChild(row1);
+    feedbackEl.appendChild(row2);
+    feedbackEl.appendChild(row3);
+
+    if(isGermanAnswer){
+      const gloss = glossSentence(correct);
+      if(gloss.length > 0){
+        const row4 = document.createElement('div');
+        row4.className = 'row word-breakdown';
+        const chips = gloss.map(g => `<span class="word-chip"><b>${escapeHtml(g.word)}</b><span class="wc-meaning">${escapeHtml(g.meaning)}</span></span>`).join('');
+        row4.innerHTML = `<span class="tag">ترجمة كل كلمة:</span><div class="word-chip-wrap">${chips}</div>`;
+        feedbackEl.appendChild(row4);
+      }
+    }
+  }
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function checkAnswer(){
+  const idx = current();
+  const typed = inputEl.value;
+  const correct = correctAnswer();
+  let ok;
+  if(chapter === 'numbers'){
+    const byWord = normalize(typed) === normalize(NUMBERS[idx].word);
+    const t = normalizeDigits(typed);
+    const byDigit = t.length > 0 && t === NUMBERS[idx].digit;
+    ok = byWord || byDigit;
+  } else {
+    ok = normalize(typed) === normalize(correct) && normalize(typed).length > 0;
+  }
+  curState()[idx] = {status: ok ? 'correct' : 'incorrect', typed};
+
+  if(ok){
+    inputEl.classList.remove('wrong'); inputEl.classList.add('right');
+    showFeedback(true, typed, correct);
+    updateDots();
+    scoreText.textContent = `صحيح: ${score()}`;
+    setTimeout(()=>{
+      const arr = data();
+      if(idx < arr.length-1){ setCurrent(idx+1); render(); }
+    }, 1200);
+  } else {
+    inputEl.classList.remove('right'); inputEl.classList.add('wrong');
+    showFeedback(false, typed, correct);
+    updateDots();
+  }
+}
+
+el('check-btn').addEventListener('click', checkAnswer);
+inputEl.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); checkAnswer(); }});
+
+el('prev-btn').addEventListener('click', ()=>{ const i=current(); if(i>0){ setCurrent(i-1); render(); }});
+el('next-btn').addEventListener('click', ()=>{ const i=current(); if(i < data().length-1){ setCurrent(i+1); render(); } });
+
+flagBtn.addEventListener('click', ()=>{
+  const idx = current();
+  const s = curState()[idx];
+  s.flagged = !s.flagged;
+  updateDots();
+  updateFlagBtn();
+});
+
+resetBtn.addEventListener('click', ()=>{
+  const sure = window.confirm('هل أنت متأكد؟ هيتم مسح كل الإجابات والتقدّم في كل الأقسام (الدرس الأول، الدرس الثاني، والأرقام) ومش هترجع تاني.');
+  if(!sure) return;
+  Object.keys(STATE).forEach(key=>{
+    STATE[key] = makeState(STATE[key].length);
+  });
+  pointer = { l1: 0, k2: 0, numbers: 0 };
+  render();
+});
+
+function setChapter(newChapter){
+  chapter = newChapter;
+  el('btn-chap-l1').classList.toggle('active', chapter==='l1');
+  el('btn-chap-k2').classList.toggle('active', chapter==='k2');
+  el('btn-chap-num').classList.toggle('active', chapter==='numbers');
+  dirSwitch.style.display = (chapter === 'numbers') ? 'none' : 'flex';
+  buildDots();
+  render();
+}
+function setDirection(newDir){
+  direction = newDir;
+  el('btn-ar-de').classList.toggle('active', direction==='ar-de');
+  el('btn-de-ar').classList.toggle('active', direction==='de-ar');
+  render();
+}
+el('btn-chap-l1').addEventListener('click', ()=>setChapter('l1'));
+el('btn-chap-k2').addEventListener('click', ()=>setChapter('k2'));
+el('btn-chap-num').addEventListener('click', ()=>setChapter('numbers'));
+el('btn-ar-de').addEventListener('click', ()=>setDirection('ar-de'));
+el('btn-de-ar').addEventListener('click', ()=>setDirection('de-ar'));
+
+buildDots();
+render();
+</script>
+</body>
+</html>
