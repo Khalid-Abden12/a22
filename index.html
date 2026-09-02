@@ -146,15 +146,6 @@
   .feedback .row{ margin-bottom:4px; }
   .feedback .row:last-child{ margin-bottom:0; }
   .feedback .tag{ display:inline-block; min-width:88px; color:var(--paper-dim); font-size:12.5px; }
-  .word-breakdown{ margin-top:6px; }
-  .word-chip-wrap{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
-  .word-chip{
-    display:flex; flex-direction:column; align-items:center; gap:2px;
-    background:var(--panel-2); border:1px solid var(--line); border-radius:10px;
-    padding:6px 10px; min-width:52px;
-  }
-  .word-chip b{ font-family:'Fraunces', serif; font-size:14px; color:var(--paper); white-space:nowrap; }
-  .word-chip .wc-meaning{ font-size:11.5px; color:var(--gold); white-space:nowrap; }
 
   .nav-row{ display:flex; align-items:center; justify-content:space-between; margin-top:20px; gap:10px; }
   .nav-btn{
@@ -266,7 +257,7 @@
     <div class="dotmap" id="dotmap"></div>
   </div>
 
-  <footer>الإجابات المحفوظة تبقى أثناء الجلسة حتى لو أخطأت — يمكنك العودة ومراجعتها.</footer>
+  <footer>الإجابات والتقدّم محفوظة تلقائيًا على هذا الجهاز باستخدام Local Storage — حتى بعد إغلاق الصفحة.</footer>
 </div>
 
 <script>
@@ -573,6 +564,59 @@ function shuffle(arr){
 }
 const NUMBERS = shuffle(Array.from({length:101}, (_,n)=>({digit:String(n), word:germanNumberWord(n)})));
 
+
+/* ===================== localStorage persistence ===================== */
+const STORAGE_KEY = 'germanQuizState_v1';
+
+function saveLocal(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      chapter,
+      direction,
+      pointer,
+      STATE
+    }));
+  }catch(e){
+    console.warn('تعذر حفظ التقدم في Local Storage', e);
+  }
+}
+
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+
+    if(saved.chapter === 'l1' || saved.chapter === 'k2' || saved.chapter === 'numbers'){
+      chapter = saved.chapter;
+    }
+    if(saved.direction === 'ar-de' || saved.direction === 'de-ar'){
+      direction = saved.direction;
+    }
+    if(saved.pointer && typeof saved.pointer === 'object'){
+      pointer = {
+        l1: Number.isInteger(saved.pointer.l1) ? saved.pointer.l1 : 0,
+        k2: Number.isInteger(saved.pointer.k2) ? saved.pointer.k2 : 0,
+        numbers: Number.isInteger(saved.pointer.numbers) ? saved.pointer.numbers : 0
+      };
+    }
+
+    if(saved.STATE && typeof saved.STATE === 'object'){
+      Object.keys(STATE).forEach(key => {
+        if(Array.isArray(saved.STATE[key]) && saved.STATE[key].length === STATE[key].length){
+          STATE[key] = saved.STATE[key].map(item => ({
+            status: item?.status === 'correct' || item?.status === 'incorrect' ? item.status : null,
+            typed: typeof item?.typed === 'string' ? item.typed : '',
+            flagged: !!item?.flagged
+          }));
+        }
+      });
+    }
+  }catch(e){
+    console.warn('تعذر تحميل التقدم من Local Storage', e);
+  }
+}
+
 /* ===================== state ===================== */
 let chapter = 'l1';     // 'l1' | 'k2' | 'numbers'
 let direction = 'ar-de'; // only relevant for l1 / k2
@@ -587,6 +631,8 @@ const STATE = {
   'k2_de-ar': makeState(ITEMS_K2.length),
   'numbers':  makeState(NUMBERS.length),
 };
+
+loadLocal();
 
 function data(){
   if(chapter === 'numbers') return NUMBERS;
@@ -682,7 +728,7 @@ function buildDots(){
     const d = document.createElement('div');
     d.className = 'dot';
     d.textContent = i+1;
-    d.addEventListener('click', ()=>{ setCurrent(i); render(); });
+    d.addEventListener('click', ()=>{ setCurrent(i); saveLocal(); render(); });
     dotmap.appendChild(d);
   });
 }
@@ -786,119 +832,6 @@ function updateFlagBtn(){
   flagBtn.textContent = flagged ? '🚩 مُعلَّم للمراجعة — دوس لإلغاء العلامة' : '🚩 علّم السؤال ده للمراجعة';
 }
 
-/* ===================== word-by-word glossary (German -> Arabic) ===================== */
-const GLOSSARY = {
-  // pronouns / basics
-  "ich":"أنا", "du":"أنت", "er":"هو", "sie":"هي / هم / حضرتك (حسب السياق)", "es":"هو (محايد)",
-  "wir":"نحن", "ihr":"أنتم", "mein":"ملكي", "meine":"ملكي", "dein":"ملكك", "deine":"ملكك", "deinen":"ملكك",
-  "ihre":"ملكك (رسمي)", "ihr's": "ملكك",
-  "das":"هذا / الـ", "der":"الـ (مذكر)", "die":"الـ (مؤنث/جمع)", "den":"الـ (حالة النصب)",
-  "und":"و", "oder":"أو", "auch":"أيضًا", "nicht":"لا / ليس", "kein":"لا يوجد (مذكر)", "keine":"لا يوجد (مؤنث)",
-  "ja":"نعم", "nein":"لا", "bitte":"من فضلك", "danke":"شكرًا", "sehr":"جدًا", "gut":"جيد", "so":"هكذا",
-  "dann":"بعد ذلك", "noch":"لسه / مرة أخرى", "viel":"كثير", "hier":"هنا", "da":"هناك", "zusammen":"معًا",
-  "wann":"متى", "wie":"كيف", "was":"ماذا", "wer":"من", "woher":"من أين", "wo":"أين", "welche":"أي",
-  "heute":"اليوم", "leider":"للأسف", "super":"رائع", "bald":"قريبًا", "einmal":"مرة واحدة",
-  "langsamer":"أبطأ", "entschuldigung":"عفوًا / آسف", "gern":"بكل سرور / يحب أن يفعل",
-  "bisschen":"قليلاً", "dir":"لك (حالة الجر)", "ein":"واحد / أداة تنكير", "einem":"لـ (أداة تنكير، حالة الجر)",
-
-  // verbs (as they appear conjugated)
-  "machst":"تفعل", "machen":"نفعل / يفعلون", "mache":"أفعل",
-  "reise":"أسافر", "singe":"أغني",
-  "hörst":"تسمع",
-  "liest":"يقرأ / تقرأ", "lese":"أقرأ",
-  "spiele":"ألعب", "spielst":"تلعب",
-  "jogge":"أمارس الجري", "joggst":"تمارس الجري", "joggt":"يمارس الجري / تمارس الجري", "joggen":"الجري (يجري)",
-  "gehen":"نذهب / يذهبون", "geht":"يذهب / يسير", "geht's":"الحال (تعبير: كيف الحال)",
-  "komme":"آتي", "kommst":"تأتي", "kommt":"يأتي / تأتي", "kommen":"يأتون / نأتي",
-  "bin":"أكون (أنا)", "bist":"تكون (أنت)", "ist":"يكون / هو", "sind":"نكون / يكونون", "seid":"تكونون (أنتم)",
-  "heiße":"اسمي", "heißt":"اسمك / يُدعى", "heißen":"يُدعى / اسمكم",
-  "wohne":"أسكن", "wohnst":"تسكن", "wohnt":"يسكن / تسكن", "wohnen":"نسكن / يسكنون",
-  "spreche":"أتحدث", "sprichst":"تتحدث", "spricht":"يتحدث / تتحدث", "sprechen":"نتحدث / يتحدثون", "sprecht":"تتحدثون",
-  "studiere":"أدرس", "studiert":"يدرس",
-  "arbeite":"أعمل", "arbeitest":"تعمل", "arbeitet":"يعمل / تعمل", "arbeiten":"نعمل / يعملون",
-  "lerne":"أتعلم / أذاكر", "lernt":"يتعلم / تتعلم", "koche":"أطبخ", "kochen":"نطبخ / يطبخون", "kochst":"تطبخ", "kocht":"يطبخ / تطبخون",
-  "habe":"لدي", "hast":"لديك", "habt":"لديكم", "haben":"لدينا / لديهم",
-  "warte":"أنتظر", "fährt":"يقود / تسير",
-  "schreibst":"تكتب", "kreuze":"أضع علامة عليه", "verstehe":"أفهم",
-
-  // colors / adjectives
-  "blau":"أزرق", "grün":"أخضر", "rot":"أحمر", "weiblich":"أنثى", "männlich":"ذكر", "frei":"إجازة / متفرغ",
-
-  // greetings / farewells
-  "hallo":"مرحبًا", "tschüs":"مع السلامة", "ciao":"سلام / وداعًا", "auf":"إلى (جزء من: إلى اللقاء)",
-  "wiedersehen":"اللقاء", "bis":"حتى", "guten":"طاب (تحية)", "gute":"طيبة (تحية)",
-
-  // prepositions
-  "am":"في (يوم)", "an":"في / على", "aus":"من", "bei":"عند / لدى", "im":"في الـ", "in":"في", "ins":"إلى الـ", "von":"من",
-
-  // days
-  "montag":"الاثنين", "dienstag":"الثلاثاء", "mittwoch":"الأربعاء", "freitag":"الجمعة",
-  "samstag":"السبت", "sonntag":"الأحد", "wochenende":"عطلة نهاية الأسبوع",
-  "morgen":"صباح", "abend":"مساء", "nacht":"ليل", "nachts":"ليلًا", "nachmittag":"بعد الظهر",
-
-  // nouns / vocab
-  "adresse":"عنوان", "angabe":"بيان / تحديد", "arzt":"طبيب", "ärzte":"أطباء", "architekt":"مهندس معماري",
-  "auto":"سيارة", "autos":"سيارات", "autobahn":"طريق سريع", "basketball":"كرة السلة", "beruf":"مهنة",
-  "buch":"كتاب", "bücher":"كتب", "butterbrot":"ساندويتش زبدة", "café":"مقهى", "computer":"كمبيوتر",
-  "e-mail":"بريد إلكتروني", "e-mail-adresse":"عنوان البريد الإلكتروني",
-  "familiennamen":"اسم العائلة", "firma":"شركة", "flasche":"زجاجة", "formular":"استمارة",
-  "frau":"سيدة", "friseurin":"مصففة شعر", "fußball":"كرة القدم",
-  "geburtsdatum":"تاريخ الميلاد", "geburtsort":"مكان الميلاد", "geld":"مال", "geschlecht":"الجنس (نوع)",
-  "glas":"كوب", "handtuch":"منشفة", "hausnummer":"رقم المنزل", "herr":"سيد",
-  "informatiker":"متخصص معلوماتية", "ingenieur":"مهندس", "karate":"الكاراتيه", "kellner":"نادل",
-  "kilometer":"كيلومتر", "kindergarten":"روضة أطفال", "kino":"سينما", "koffer":"حقيبة",
-  "krankenhaus":"مستشفى", "krankenpfleger":"ممرض", "kranke":"مريض", "kurs":"دورة / كورس",
-  "lehrerin":"معلمة", "medikament":"دواء", "museum":"متحف", "musik":"موسيقى", "name":"اسم",
-  "patientin":"مريضة", "plural":"الجمع (نحو)", "postleitzahl":"الرمز البريدي", "praktikum":"تدريب عملي",
-  "rechnung":"فاتورة", "restaurant":"مطعم", "restaurants":"مطاعم", "schlüssel":"مفتاح", "schule":"مدرسة",
-  "schwimmbad":"مسبح", "sprachen":"لغات", "spritze":"حقنة", "stadion":"ملعب", "stift":"قلم",
-  "straße":"شارع", "student":"طالب", "studenten":"طلاب", "studentin":"طالبة", "stunde":"ساعة", "stunden":"ساعات",
-  "tablette":"حبة دواء", "tag":"يوم", "tage":"أيام", "taxi":"تاكسي", "taxifahrer":"سائق تاكسي",
-  "telefonnummer":"رقم الهاتف", "tennis":"التنس", "theater":"مسرح", "universität":"جامعة",
-  "verkäuferin":"بائعة", "vornamen":"الاسم الأول", "wohnort":"مكان السكن",
-  "würstchen":"نقانق", "würstel":"نقانق", "yoga":"يوغا", "zumba":"زومبا",
-  "at-zeichen":"علامة @", "punkt":"نقطة", "minus":"شرطة", "unterstrich":"شرطة سفلية",
-
-  // languages
-  "arabisch":"العربية", "deutsch":"الألمانية", "englisch":"الإنجليزية", "französisch":"الفرنسية",
-  "italienisch":"الإيطالية", "japanisch":"اليابانية", "portugiesisch":"البرتغالية", "russisch":"الروسية",
-  "spanisch":"الإسبانية",
-
-  // countries / cities
-  "österreich":"النمسا", "deutschland":"ألمانيا", "schweiz":"سويسرا", "japan":"اليابان",
-  "algerien":"الجزائر", "brasilien":"البرازيل", "usa":"الولايات المتحدة", "ukraine":"أوكرانيا",
-  "spanien":"إسبانيا", "türkei":"تركيا", "frankfurt":"فرانكفورت", "salzburg":"سالزبورغ",
-  "berlin":"برلين", "tokio":"طوكيو", "köln":"كولن", "lugano":"لوغانو", "paris":"باريس",
-  "zürich":"زيورخ", "san":"سان", "francisco":"فرانسيسكو",
-
-  // personal names (transliteration only)
-  "boris":"بوريس (اسم)", "walder":"فالدر (اسم)", "saki":"ساكي (اسم)", "tanaka":"تاناكا (اسم)",
-  "kateb":"كاتب (اسم)", "brahim":"إبراهيم (اسم)", "olivia":"أوليفيا (اسم)", "miller":"ميلر (اسم)",
-  "gabriel":"غابرييل (اسم)", "santos":"سانتوس (اسم)", "alessia":"أليسيا (اسم)", "conti":"كونتي (اسم)",
-  "nina":"نينا (اسم)", "niklas":"نيكلاس (اسم)", "julia":"يوليا (اسم)", "oliver":"أوليفر (اسم)",
-  "hansen":"هانزن (اسم)", "weber":"فيبر (اسم)", "kowalski":"كوفالسكي (اسم)", "selina":"سيلينا (اسم)",
-  "lang":"لانغ (اسم)", "jan":"يان (اسم)", "alexis":"أليكسيس (اسم)", "barbos":"باربوس (اسم)",
-  "taxi-zentral":"تاكسي-تسنترال (اسم شركة)",
-};
-
-function glossWord(raw){
-  // strip surrounding punctuation/quotes but keep internal hyphens, apostrophes, @ . _
-  const cleaned = raw.replace(/^[„"«»'".,!?;:()]+|[„"«»'".,!?;:()]+$/g, '');
-  if(!cleaned) return null;
-  const key = cleaned.toLowerCase();
-  if(key.includes('@')) return {word: cleaned, meaning:"بريد إلكتروني"};
-  const meaning = GLOSSARY[key];
-  if(meaning) return {word: cleaned, meaning};
-  // likely a proper noun (capitalized, unknown)
-  if(/^[A-ZÄÖÜ]/.test(cleaned)) return {word: cleaned, meaning:"اسم علم"};
-  return {word: cleaned, meaning:"—"};
-}
-
-function glossSentence(text){
-  const tokens = text.split(/\s+/).filter(Boolean);
-  return tokens.map(glossWord).filter(Boolean);
-}
-
 function showFeedback(isCorrect, typed, correct){
   feedbackEl.classList.add('show', isCorrect ? 'good' : 'bad');
   feedbackEl.innerHTML = '';
@@ -927,17 +860,6 @@ function showFeedback(isCorrect, typed, correct){
     feedbackEl.appendChild(row1);
     feedbackEl.appendChild(row2);
     feedbackEl.appendChild(row3);
-
-    if(isGermanAnswer){
-      const gloss = glossSentence(correct);
-      if(gloss.length > 0){
-        const row4 = document.createElement('div');
-        row4.className = 'row word-breakdown';
-        const chips = gloss.map(g => `<span class="word-chip"><b>${escapeHtml(g.word)}</b><span class="wc-meaning">${escapeHtml(g.meaning)}</span></span>`).join('');
-        row4.innerHTML = `<span class="tag">ترجمة كل كلمة:</span><div class="word-chip-wrap">${chips}</div>`;
-        feedbackEl.appendChild(row4);
-      }
-    }
   }
 }
 
@@ -959,6 +881,7 @@ function checkAnswer(){
     ok = normalize(typed) === normalize(correct) && normalize(typed).length > 0;
   }
   curState()[idx] = {status: ok ? 'correct' : 'incorrect', typed};
+  saveLocal();
 
   if(ok){
     inputEl.classList.remove('wrong'); inputEl.classList.add('right');
@@ -967,7 +890,7 @@ function checkAnswer(){
     scoreText.textContent = `صحيح: ${score()}`;
     setTimeout(()=>{
       const arr = data();
-      if(idx < arr.length-1){ setCurrent(idx+1); render(); }
+      if(idx < arr.length-1){ setCurrent(idx+1); saveLocal(); render(); }
     }, 1200);
   } else {
     inputEl.classList.remove('right'); inputEl.classList.add('wrong');
@@ -979,13 +902,14 @@ function checkAnswer(){
 el('check-btn').addEventListener('click', checkAnswer);
 inputEl.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); checkAnswer(); }});
 
-el('prev-btn').addEventListener('click', ()=>{ const i=current(); if(i>0){ setCurrent(i-1); render(); }});
-el('next-btn').addEventListener('click', ()=>{ const i=current(); if(i < data().length-1){ setCurrent(i+1); render(); } });
+el('prev-btn').addEventListener('click', ()=>{ const i=current(); if(i>0){ setCurrent(i-1); saveLocal(); render(); }});
+el('next-btn').addEventListener('click', ()=>{ const i=current(); if(i < data().length-1){ setCurrent(i+1); saveLocal(); render(); } });
 
 flagBtn.addEventListener('click', ()=>{
   const idx = current();
   const s = curState()[idx];
   s.flagged = !s.flagged;
+  saveLocal();
   updateDots();
   updateFlagBtn();
 });
@@ -997,11 +921,13 @@ resetBtn.addEventListener('click', ()=>{
     STATE[key] = makeState(STATE[key].length);
   });
   pointer = { l1: 0, k2: 0, numbers: 0 };
+  saveLocal();
   render();
 });
 
 function setChapter(newChapter){
   chapter = newChapter;
+  saveLocal();
   el('btn-chap-l1').classList.toggle('active', chapter==='l1');
   el('btn-chap-k2').classList.toggle('active', chapter==='k2');
   el('btn-chap-num').classList.toggle('active', chapter==='numbers');
@@ -1011,6 +937,7 @@ function setChapter(newChapter){
 }
 function setDirection(newDir){
   direction = newDir;
+  saveLocal();
   el('btn-ar-de').classList.toggle('active', direction==='ar-de');
   el('btn-de-ar').classList.toggle('active', direction==='de-ar');
   render();
