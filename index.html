@@ -26,6 +26,8 @@
     --bad-dim: rgba(226,106,95,0.14);
     --good:#6fbf8b;
     --good-dim: rgba(111,191,139,0.14);
+    --blue:#4a90e2;
+    --blue-dim: rgba(74,144,226,0.16);
     --radius: 18px;
   }
   *{box-sizing:border-box;}
@@ -146,6 +148,16 @@
   .feedback .row{ margin-bottom:4px; }
   .feedback .row:last-child{ margin-bottom:0; }
   .feedback .tag{ display:inline-block; min-width:88px; color:var(--paper-dim); font-size:12.5px; }
+  .gloss-wrap{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); }
+  .gloss-title{ font-size:12.5px; color:var(--paper-dim); margin-bottom:8px; }
+  .gloss-list{ display:flex; flex-wrap:wrap; gap:6px; direction:ltr; }
+  .gloss-chip{
+    display:inline-flex; align-items:baseline; gap:6px;
+    background:var(--blue-dim); border:1px solid rgba(74,144,226,.35);
+    border-radius:8px; padding:4px 9px; font-size:13px;
+  }
+  .gloss-chip .w{ font-family:'Fraunces', serif; font-weight:600; color:var(--paper); }
+  .gloss-chip .g{ font-family:'IBM Plex Sans Arabic', sans-serif; direction:rtl; color:var(--paper-dim); font-size:12.5px; }
 
   .nav-row{ display:flex; align-items:center; justify-content:space-between; margin-top:20px; gap:10px; }
   .nav-btn{
@@ -158,9 +170,24 @@
   .nav-btn.next{ background:var(--gold); color:var(--ink); border-color:var(--gold); font-weight:600; }
 
   .dotmap-wrap{ margin-top:26px; }
-  .dotmap-label{ font-size:12.5px; color:var(--paper-dim); margin-bottom:10px; }
+  .dotmap-label-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    flex-wrap:wrap; margin-bottom:10px;
+  }
+  .dotmap-label{ font-size:12.5px; color:var(--paper-dim); }
+  .conv-full-btn{
+    border:1px solid rgba(75,179,173,.4); background:var(--teal-dim); color:var(--teal);
+    border-radius:999px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;
+    font-family:inherit; display:inline-flex; align-items:center; gap:6px; transition:background .2s ease;
+  }
+  .conv-full-btn:hover{ background:rgba(75,179,173,0.28); }
   .dotmap{
     display:flex; flex-wrap:wrap; gap:7px; max-height:118px; overflow-y:auto; padding:2px;
+  }
+  /* على شاشة كمبيوتر: صف فيه 20 نقطة بالظبط بدل ما يتوقف عند 19 */
+  @media (min-width:700px){
+    .dotmap{ display:grid; grid-template-columns:repeat(20, 1fr); align-content:flex-start; }
+    .dotmap .dot{ width:auto; height:auto; aspect-ratio:1/1; }
   }
   .dot{
     width:30px; height:30px; border-radius:9px; border:1px solid var(--line);
@@ -169,10 +196,70 @@
     transition:transform .12s ease;
   }
   .dot:hover{ transform:translateY(-2px); }
-  .dot.current{ border-color:var(--paper); color:var(--paper); }
+  .dot.current{ background:var(--blue); color:#fff; border-color:var(--blue); }
   .dot.correct{ background:var(--good-dim); color:var(--good); border-color:rgba(111,191,139,.4); }
   .dot.incorrect{ background:var(--bad-dim); color:var(--bad); border-color:rgba(226,106,95,.4); }
   .dot.flagged{ background:rgba(226,196,50,0.22); color:#e8cf3d; border-color:rgba(226,196,50,.55); }
+  /* current always wins visually, even if also correct/incorrect/flagged */
+  .dot.current.correct, .dot.current.incorrect, .dot.current.flagged{
+    background:var(--blue); color:#fff; border-color:var(--blue);
+  }
+
+  .dot.dot-a{
+    background:var(--gold-dim); color:var(--gold); border-color:rgba(226,165,69,.45);
+    font-weight:700; font-size:13.5px;
+  }
+  .dot.dot-a:hover{ background:rgba(226,165,69,0.26); }
+
+  /* ===================== Conversation modal (زر A) ===================== */
+  .conv-overlay{
+    display:none; position:fixed; inset:0; z-index:50;
+    background:rgba(8,11,14,0.72); backdrop-filter:blur(3px);
+    align-items:flex-start; justify-content:center;
+    padding:26px 14px 40px; overflow-y:auto;
+  }
+  .conv-overlay.show{ display:flex; }
+  .conv-modal{
+    width:100%; max-width:640px; background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:0 30px 60px -30px rgba(0,0,0,.7);
+    padding:22px 20px 24px; margin-top:10px;
+  }
+  .conv-modal-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;
+  }
+  .conv-modal-title{ font-family:'Fraunces', serif; font-weight:600; font-size:20px; color:var(--paper); }
+  .conv-close-btn{
+    border:1px solid var(--line); background:var(--panel-2); color:var(--paper-dim);
+    border-radius:999px; width:34px; height:34px; font-size:16px; cursor:pointer; font-family:inherit;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .conv-close-btn:hover{ color:var(--paper); border-color:var(--gold); }
+  .conv-playall-row{ margin-bottom:16px; }
+  .conv-playall-btn{
+    width:100%; border:none; border-radius:12px; padding:13px; font-size:14.5px; font-weight:600;
+    cursor:pointer; background:var(--gold); color:var(--ink); font-family:inherit;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:opacity .2s ease, transform .12s ease;
+  }
+  .conv-playall-btn:hover{ opacity:.92; }
+  .conv-playall-btn:active{ transform:scale(.98); }
+  .conv-list{ display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto; padding-left:2px; }
+  .conv-line{
+    display:flex; align-items:flex-start; gap:10px; padding:11px 12px; border-radius:12px;
+    background:var(--panel-2); border:1px solid var(--line); transition:background .25s ease, border-color .25s ease;
+    cursor:pointer;
+  }
+  .conv-line.playing{ background:var(--gold-dim); border-color:rgba(226,165,69,.45); }
+  .conv-line.selected{ border-color:var(--blue); box-shadow:0 0 0 1px var(--blue) inset; }
+  .conv-speaker{
+    flex:none; width:26px; height:26px; border-radius:50%; background:var(--violet-dim); color:var(--violet);
+    font-size:12.5px; font-weight:700; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; direction:ltr;
+  }
+  .conv-text-wrap{ flex:1; min-width:0; }
+  .conv-de{ font-family:'Fraunces', serif; font-weight:500; font-size:16px; color:var(--paper); direction:ltr; text-align:left; }
+  .conv-ar{ font-family:'Amiri', serif; font-size:14.5px; color:var(--paper-dim); direction:rtl; text-align:right; margin-top:3px; }
+  .conv-line .speak-btn{ flex:none; }
 
   .flag-row{ display:flex; justify-content:center; margin-top:14px; }
   .flag-btn{
@@ -253,13 +340,27 @@
   </div>
 
   <div class="dotmap-wrap">
-    <div class="dotmap-label">انتقل إلى أي سؤال:</div>
+    <div class="dotmap-label-row">
+      <div class="dotmap-label">انتقل إلى أي سؤال:</div>
+      <button type="button" class="conv-full-btn" id="conv-full-btn" style="display:none">🔊 تشغيل المحادثة كاملة (كل الدرس)</button>
+    </div>
     <div class="dotmap" id="dotmap"></div>
   </div>
 
-  <footer>الإجابات والتقدّم محفوظة تلقائيًا على هذا الجهاز حتى بعد إغلاق الصفحة.</footer>
-    <footer>khalid abden</footer>
+  <footer>الإجابات والتقدّم محفوظة تلقائيًا على هذا الجهاز باستخدام Local Storage — حتى بعد إغلاق الصفحة.</footer>
+</div>
 
+<div class="conv-overlay" id="conv-overlay">
+  <div class="conv-modal">
+    <div class="conv-modal-head">
+      <div class="conv-modal-title" id="conv-modal-title">المحادثة — الدرس الثاني</div>
+      <button type="button" class="conv-close-btn" id="conv-close-btn" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="conv-playall-row">
+      <button type="button" class="conv-playall-btn" id="conv-playall-btn">▶️ تشغيل المحادثة كاملة</button>
+    </div>
+    <div class="conv-list" id="conversation-list"></div>
+  </div>
 </div>
 
 <script>
@@ -567,6 +668,84 @@ function shuffle(arr){
 const NUMBERS = shuffle(Array.from({length:101}, (_,n)=>({digit:String(n), word:germanNumberWord(n)})));
 
 
+/* ===================== Wort-für-Wort Glossar (ترجمة كل كلمة) ===================== */
+const GLOSSARY = {
+  "am":"في (وقت/يوم)", "an":"في/عند", "angabe":"بيان", "arabisch":"العربية",
+  "arbeite":"أعمل", "arbeiten":"يعملون/نعمل", "arbeitest":"تعمل", "arbeitet":"يعمل/تعمل",
+  "architekt":"مهندس معماري", "arzt":"طبيب", "ärzte":"أطباء", "at-zeichen":"علامة @ (أت)",
+  "auch":"أيضاً", "auf":"على", "aus":"من", "auto":"سيارة", "autobahn":"الطريق السريع", "autos":"سيارات",
+  "bald":"قريباً", "basketball":"كرة السلة", "bei":"عند/لدى", "berlin":"برلين", "beruf":"مهنة",
+  "bin":"أكون (أنا)", "bis":"حتى/إلى", "bisschen":"قليلاً", "bist":"تكون (أنت)", "bitte":"من فضلك",
+  "blau":"أزرق", "brasilien":"البرازيل", "buch":"كتاب", "bücher":"كتب", "butterbrot":"ساندويتش بالزبدة",
+  "café":"مقهى", "ciao":"سلام (وداعاً)", "computer":"كمبيوتر", "da":"هناك", "danke":"شكراً",
+  "dann":"بعدين/ثم", "das":"أداة تعريف محايدة / هذا", "dein":"ـك (ملكية)", "deine":"ـك (ملكية)",
+  "deinen":"ـك (ملكية)", "den":"أداة تعريف (نصب، مذكر)", "der":"أداة تعريف مذكر",
+  "deutsch":"الألمانية (اللغة)", "deutschland":"ألمانيا", "die":"أداة تعريف مؤنث/جمع",
+  "dienstag":"الثلاثاء", "dir":"لك", "du":"أنت", "e-mail":"البريد الإلكتروني",
+  "e-mail-adresse":"عنوان البريد الإلكتروني", "ein":"أداة تنكير", "einem":"أداة تنكير (جر)",
+  "einmal":"مرة واحدة", "englisch":"الإنجليزية", "entschuldigung":"عفواً/آسف", "er":"هو",
+  "es":"هو/هي (محايد)", "fährt":"يقود", "familiennamen":"اسم العائلة", "firma":"شركة",
+  "flasche":"زجاجة", "formular":"استمارة", "frankfurt":"فرانكفورت", "französisch":"الفرنسية",
+  "frau":"سيدة", "frei":"إجازة/متفرغ", "freitag":"الجمعة", "friseurin":"مصففة شعر",
+  "fußball":"كرة القدم", "ganz":"تماماً/لا بأس", "geburtsdatum":"تاريخ الميلاد",
+  "geburtsort":"مكان الميلاد", "gehen":"نذهب/يذهبون", "geht":"يسير/الحال", "geht's":"الحال (كيف الحال)",
+  "geld":"مال", "gern":"بكل سرور", "geschlecht":"الجنس (ذكر/أنثى)", "glas":"كوب", "grün":"أخضر",
+  "gut":"جيد/بخير", "gute":"طاب (تحية)", "guten":"طاب (تحية)", "habe":"لدي", "haben":"لدينا/يملكون",
+  "habt":"لديكم", "hallo":"مرحباً", "handtuch":"منشفة", "hast":"لديك", "hausnummer":"رقم المنزل",
+  "heiße":"اسمي", "heißen":"يسمى/تسمون", "heißt":"يسمى", "herr":"سيد", "heute":"اليوم", "hier":"هنا",
+  "hörst":"تسمع", "ich":"أنا", "ihnen":"لكم (رسمي)", "ihr":"أنتم / ـها (ملكية)", "ihre":"ـها/ـكم (ملكية)",
+  "im":"في (داخل)", "in":"في", "informatiker":"مختص معلوماتية", "ingenieur":"مهندس", "ins":"إلى (داخل)",
+  "ist":"يكون (هو/هي)", "italienisch":"الإيطالية", "ja":"نعم", "japan":"اليابان", "japanisch":"اليابانية",
+  "jogge":"أجري", "joggen":"الجري (رياضة)", "joggst":"تجري", "joggt":"يجري/تجري", "karate":"الكاراتيه",
+  "keine":"لا/ليس", "kellner":"نادل", "kilometer":"كيلومتر", "kindergarten":"روضة أطفال", "kino":"سينما",
+  "koche":"أطبخ", "kochen":"نطبخ/الطبخ", "kochst":"تطبخ", "kocht":"يطبخ/تطبخ", "koffer":"حقيبة سفر",
+  "köln":"كولن (مدينة)", "komme":"آتي", "kommen":"يأتون", "kommst":"تأتي", "kommt":"يأتي",
+  "kranke":"المريض", "krankenhaus":"مستشفى", "krankenpfleger":"ممرض", "kreuze":"أضع علامة",
+  "kurs":"كورس/دورة", "langsamer":"أبطأ", "lehrerin":"معلمة", "leider":"للأسف", "lerne":"أتعلم/أذاكر",
+  "lernt":"يتعلم", "lese":"أقرأ", "liest":"يقرأ/تقرأ", "lugano":"لوغانو (مدينة)", "mache":"أفعل/أمارس",
+  "machen":"يفعلون/نفعل", "machst":"تفعل", "männlich":"ذكر", "medikament":"دواء", "mein":"اسمي/ملكي",
+  "minus":"علامة الطرح", "mittwoch":"الأربعاء", "montag":"الاثنين", "morgen":"صباح/غداً", "museum":"متحف",
+  "musik":"موسيقى", "nachmittag":"بعد الظهر", "nacht":"ليلة", "nachts":"ليلاً", "name":"اسم", "nein":"لا",
+  "nicht":"لا/ليس (نفي)", "noch":"أيضاً/بعد", "nudeln":"المعكرونة", "oder":"أو", "österreich":"النمسا",
+  "paris":"باريس", "patientin":"مريضة", "plural":"صيغة الجمع", "portugiesisch":"البرتغالية",
+  "postleitzahl":"الرمز البريدي", "praktikum":"تدريب عملي", "punkt":"نقطة", "rechnung":"فاتورة",
+  "reise":"أسافر", "restaurant":"مطعم", "restaurants":"مطاعم", "rot":"أحمر", "russisch":"الروسية",
+  "salzburg":"سالزبورغ (مدينة)", "samstag":"السبت", "schlüssel":"مفتاح", "schreibst":"تكتب",
+  "schule":"مدرسة", "schweiz":"سويسرا", "schwimmbad":"مسبح", "sehr":"جداً", "seid":"تكونون (أنتم)",
+  "sie":"هي/هم/أنتِ (رسمي)", "sind":"يكونون (نحن/هم)", "singe":"أغني", "so":"هكذا/إلى حد ما",
+  "sonntag":"الأحد", "spanien":"إسبانيا", "spanisch":"الإسبانية", "spiele":"ألعب", "spielst":"تلعب",
+  "sprachen":"لغات", "spreche":"أتحدث", "sprechen":"يتحدثون/نتحدث", "sprecht":"تتحدثون",
+  "sprichst":"تتحدث", "spricht":"يتحدث/تتحدث", "spritze":"حقنة", "stadion":"ملعب", "stift":"قلم",
+  "straße":"شارع", "student":"طالب", "studenten":"طلاب", "studentin":"طالبة", "studiere":"أدرس",
+  "studiert":"يدرس/تدرس", "stunde":"ساعة", "stunden":"ساعات", "super":"رائع", "tablette":"حبة دواء",
+  "tag":"يوم", "tage":"أيام", "taxi":"تاكسي", "taxi-zentral":"تاكسي-تسنترال (اسم شركة)",
+  "taxifahrer":"سائق تاكسي", "telefonnummer":"رقم الهاتف", "tennis":"التنس", "theater":"مسرح",
+  "tokio":"طوكيو", "tschüs":"مع السلامة", "türkei":"تركيا", "ukraine":"أوكرانيا", "und":"و",
+  "universität":"جامعة", "unterstrich":"شرطة سفلية", "usa":"الولايات المتحدة", "verkäuferin":"بائعة",
+  "verstehe":"أفهم", "viel":"كثيراً", "von":"من", "vornamen":"الاسم الأول", "wann":"متى", "warte":"أنتظر",
+  "was":"ماذا", "weiblich":"أنثى", "welche":"أي/ما", "wer":"من", "wie":"كيف", "wiedersehen":"اللقاء",
+  "wir":"نحن", "wo":"أين", "wochenende":"عطلة نهاية الأسبوع", "woher":"من أين", "wohne":"أسكن",
+  "wohnen":"يسكنون/تسكن (رسمي)", "wohnort":"مكان السكن", "wohnst":"تسكن", "wohnt":"يسكن/تسكن",
+  "würstchen":"نقانق (سجق صغير)", "würstel":"نقانق (سجق صغير)", "yoga":"اليوغا", "zumba":"الزومبا",
+  "zürich":"زيورخ", "zusammen":"معاً", "abend":"مساء", "adresse":"عنوان",
+  "alexis_barbos@quinnet.com":"مثال على بريد إلكتروني",
+  // أسماء أشخاص وأماكن ظاهرة في جمل الدرس
+  "alessia":"اسم علم", "alexis":"اسم علم", "barbos":"اسم عائلة", "boris":"اسم علم", "brahim":"اسم عائلة",
+  "conti":"اسم عائلة", "francisco":"جزء من اسم مدينة", "gabriel":"اسم علم", "hansen":"اسم عائلة",
+  "jan":"اسم علم", "julia":"اسم علم", "kateb":"اسم علم", "kowalski":"اسم عائلة", "lang":"اسم عائلة",
+  "miller":"اسم عائلة", "niklas":"اسم علم", "nina":"اسم علم", "oliver":"اسم علم", "olivia":"اسم علم",
+  "saki":"اسم علم", "san":"جزء من اسم مدينة", "santos":"اسم عائلة", "selina":"اسم علم",
+  "tanaka":"اسم عائلة", "walder":"اسم عائلة", "weber":"اسم عائلة", "algerien":"الجزائر"
+};
+
+function glossWords(sentence){
+  return sentence
+    .split(/\s+/)
+    .map(tok => tok.replace(/^[„"“”.,!?;:()]+|[„"“”.,!?;:()]+$/g, ''))
+    .filter(tok => tok.length > 0 && /[a-zA-ZÀ-ÖØ-öø-ÿ]/.test(tok))
+    .map(tok => ({ word: tok, gloss: GLOSSARY[tok.toLowerCase()] || null }));
+}
+
 /* ===================== localStorage persistence ===================== */
 const STORAGE_KEY = 'germanQuizState_v1';
 
@@ -658,6 +837,12 @@ const answerSpeakBtn = el('answer-speak-btn');
 const dirSwitch = el('dir-switch');
 const flagBtn = el('flag-btn');
 const resetBtn = el('reset-btn');
+const convOverlay = el('conv-overlay');
+const convListEl = el('conversation-list');
+const convPlayAllBtn = el('conv-playall-btn');
+const convCloseBtn = el('conv-close-btn');
+const convModalTitle = el('conv-modal-title');
+const convFullBtn = el('conv-full-btn');
 
 /* ===================== speech ===================== */
 let deVoice = null;
@@ -710,6 +895,169 @@ function makeSpeakButton(text, small){
   return btn;
 }
 
+/* ===================== conversation modal (زر A/B/C.. — مراجعة كل محادثة على حدة) ===================== */
+// كل محادثة من الـ 7 بتتربط بمدى (start..end) من مصفوفة ITEMS_K2 (نفس ترتيب السؤال في اللعبة)
+const K2_GROUPS = [
+  {label:'A', start:0,   end:17},
+  {label:'B', start:18,  end:31},
+  {label:'C', start:32,  end:69},
+  {label:'D', start:70,  end:101},
+  {label:'E', start:102, end:115},
+  {label:'F', start:116, end:133},
+  {label:'G', start:134, end:150},
+];
+// محادثة "الكل" — الدرس التاني كله من أول جملة لآخر جملة
+const K2_ALL_GROUP = {label:'الكل', start:0, end:ITEMS_K2.length-1};
+
+let activeConvGroup = null;
+let convPlaying = false;
+let convPlayToken = 0;
+let convResumeIndex = 0; // آخر جملة (لوكال إندكس جوه المحادثة المفتوحة) هنكمل منها لما نضغط تشغيل تاني
+
+function speakGermanOnce(text){
+  return new Promise((resolve)=>{
+    if(!('speechSynthesis' in window)){ resolve(); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE';
+    const voice = pickGermanVoice();
+    if(voice){ u.voice = voice; }
+    u.rate = 0.92;
+    u.onend = ()=>resolve();
+    u.onerror = ()=>resolve();
+    window.speechSynthesis.speak(u);
+  });
+}
+
+// إيقاف مؤقت (Pause): بيوقف الصوت دلوقتي بس بيسيب المؤشر مكانه عشان يكمل منه تاني
+function pauseConversation(){
+  convPlayToken++;
+  if('speechSynthesis' in window){ window.speechSynthesis.cancel(); }
+  convPlaying = false;
+  convPlayAllBtn.textContent = '▶️ استكمال المحادثة';
+}
+
+// إيقاف كامل (Reset): بيرجّع المؤشر للأول — بيتستخدم لما نقفل المودال أو نفتح محادثة تانية
+function hardResetConversation(){
+  convPlayToken++;
+  if('speechSynthesis' in window){ window.speechSynthesis.cancel(); }
+  convPlaying = false;
+  convResumeIndex = 0;
+  convPlayAllBtn.textContent = '▶️ تشغيل المحادثة كاملة';
+  convListEl.querySelectorAll('.conv-line').forEach(l=>l.classList.remove('playing','selected'));
+}
+
+// دوس على أي جملة في المحادثة عشان التشغيل يبدأ منها بالظبط
+function selectConversationLine(localI){
+  pauseConversation(); // نوقف أي تشغيل شغال حاليًا
+  convResumeIndex = localI;
+  convPlayAllBtn.textContent = '▶️ تشغيل من هنا';
+  const lines = convListEl.querySelectorAll('.conv-line');
+  lines.forEach(l=>l.classList.remove('playing','selected'));
+  if(lines[localI]){ lines[localI].classList.add('selected'); }
+}
+
+async function playConversation(){
+  if(!activeConvGroup) return;
+  if(convPlaying){ pauseConversation(); return; } // ضغط تاني وهي شغالة = إيقاف مؤقت هنا بالظبط
+  convPlaying = true;
+  const myToken = ++convPlayToken;
+  convPlayAllBtn.textContent = '⏸ إيقاف التشغيل';
+  const lines = convListEl.querySelectorAll('.conv-line');
+  const total = activeConvGroup.end - activeConvGroup.start + 1;
+
+  for(let localI = convResumeIndex; localI < total; localI++){
+    if(myToken !== convPlayToken) return; // اتعمله إيقاف مؤقت — نسيبه واقف عند الجملة دي بالظبط
+    convResumeIndex = localI;
+    lines.forEach(l=>l.classList.remove('playing','selected'));
+    if(lines[localI]){
+      lines[localI].classList.add('playing');
+      lines[localI].scrollIntoView({block:'center', behavior:'smooth'});
+    }
+    await speakGermanOnce(ITEMS_K2[activeConvGroup.start + localI].de);
+    if(myToken !== convPlayToken) return;
+    await new Promise(r=>setTimeout(r, 380)); // فاصل زمني طبيعي بين الجُمل
+    convResumeIndex = localI + 1; // خلصنا الجملة دي، المرة الجاية تبدأ من اللي بعدها
+  }
+
+  lines.forEach(l=>l.classList.remove('playing'));
+  convPlaying = false;
+  convResumeIndex = 0; // المحادثة خلصت كاملة، فلو دُست تشغيل تاني تبدأ من الأول
+  convPlayAllBtn.textContent = '▶️ تشغيل المحادثة كاملة';
+}
+
+function makeConvSpeakButton(text){
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'speak-btn small';
+  btn.setAttribute('aria-label', 'نطق هذه الجملة بالألمانية');
+  btn.textContent = '🔊';
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    pauseConversation(); // نوقّف التشغيل التسلسلي مؤقتًا (لو شغال) قبل نطق جملة واحدة بس، من غير ما نفقد مكاننا
+    speakGerman(text);
+  });
+  return btn;
+}
+
+function renderConversationList(group){
+  convListEl.innerHTML = '';
+  let localI = 0;
+  for(let i=group.start; i<=group.end; i++){
+    const item = ITEMS_K2[i];
+    const row = document.createElement('div');
+    row.className = 'conv-line';
+    const thisLocalI = localI;
+    row.addEventListener('click', ()=>{ selectConversationLine(thisLocalI); });
+
+    const speaker = document.createElement('div');
+    speaker.className = 'conv-speaker';
+    speaker.textContent = item.sp || '·';
+
+    const textWrap = document.createElement('div');
+    textWrap.className = 'conv-text-wrap';
+
+    const deLine = document.createElement('div');
+    deLine.className = 'conv-de';
+    deLine.textContent = item.de;
+
+    const arLine = document.createElement('div');
+    arLine.className = 'conv-ar';
+    arLine.textContent = item.ar;
+
+    textWrap.appendChild(deLine);
+    textWrap.appendChild(arLine);
+
+    row.appendChild(speaker);
+    row.appendChild(textWrap);
+    row.appendChild(makeConvSpeakButton(item.de));
+    convListEl.appendChild(row);
+    localI++;
+  }
+}
+
+function openConversationModal(group){
+  hardResetConversation(); // محادثة جديدة = نبدأ مؤشر التشغيل من الأول
+  activeConvGroup = group;
+  const isAll = group === K2_ALL_GROUP;
+  convModalTitle.textContent = isAll
+    ? `المحادثة كاملة — كل الدرس الثاني (${group.start+1} إلى ${group.end+1})`
+    : `المحادثة ${group.label} — الأسئلة ${group.start+1} إلى ${group.end+1}`;
+  renderConversationList(group);
+  convOverlay.classList.add('show');
+}
+function closeConversationModal(){
+  hardResetConversation();
+  convOverlay.classList.remove('show');
+
+}
+
+convPlayAllBtn.addEventListener('click', playConversation);
+convCloseBtn.addEventListener('click', closeConversationModal);
+convOverlay.addEventListener('click', (e)=>{
+  if(e.target === convOverlay){ closeConversationModal(); }
+});
+convFullBtn.addEventListener('click', ()=>{ openConversationModal(K2_ALL_GROUP); });
+
 /* ===================== normalization ===================== */
 function normalize(s){
   return s
@@ -726,25 +1074,41 @@ function normalizeDigits(s){
 function buildDots(){
   dotmap.innerHTML = "";
   const arr = data();
-  arr.forEach((it, i)=>{
+
+  const appendNumberDot = (i)=>{
     const d = document.createElement('div');
     d.className = 'dot';
     d.textContent = i+1;
+    d.dataset.qIndex = i;
     d.addEventListener('click', ()=>{ setCurrent(i); saveLocal(); render(); });
     dotmap.appendChild(d);
-  });
+  };
+
+  if(chapter === 'k2'){
+    K2_GROUPS.forEach(group=>{
+      const aTile = document.createElement('div');
+      aTile.className = 'dot dot-a';
+      aTile.textContent = group.label;
+      aTile.title = `اعرض واسمع المحادثة ${group.label} قبل أسئلتها`;
+      aTile.addEventListener('click', ()=>{ openConversationModal(group); });
+      dotmap.appendChild(aTile);
+      for(let i=group.start; i<=group.end; i++){ appendNumberDot(i); }
+    });
+  } else {
+    arr.forEach((it, i)=>appendNumberDot(i));
+  }
 }
 function updateDots(){
-  const dots = dotmap.children;
   const idx = current();
   const st = curState();
-  for(let i=0;i<data().length;i++){
+  dotmap.querySelectorAll('.dot[data-q-index]').forEach(dotEl=>{
+    const i = Number(dotEl.dataset.qIndex);
     const s = st[i].status;
     let cls = 'dot' + (i===idx ? ' current' : '') +
       (s==='correct' ? ' correct' : s==='incorrect' ? ' incorrect' : '');
     if(st[i].flagged){ cls += ' flagged'; }
-    dots[i].className = cls;
-  }
+    dotEl.className = cls;
+  });
 }
 function score(){ return curState().filter(s=>s.status==='correct').length; }
 
@@ -862,6 +1226,31 @@ function showFeedback(isCorrect, typed, correct){
     feedbackEl.appendChild(row1);
     feedbackEl.appendChild(row2);
     feedbackEl.appendChild(row3);
+
+    // ترجمة كل كلمة من الجملة الألمانية (بس للدرسين، مش للأرقام)
+    if(chapter !== 'numbers'){
+      const idx = current();
+      const deSentence = data()[idx].de;
+      const glossed = glossWords(deSentence);
+      if(glossed.length){
+        const wrap = document.createElement('div');
+        wrap.className = 'gloss-wrap';
+        const title = document.createElement('div');
+        title.className = 'gloss-title';
+        title.textContent = 'ترجمة كل كلمة:';
+        const list = document.createElement('div');
+        list.className = 'gloss-list';
+        glossed.forEach(({word, gloss})=>{
+          const chip = document.createElement('span');
+          chip.className = 'gloss-chip';
+          chip.innerHTML = `<span class="w">${escapeHtml(word)}</span><span class="g">${gloss ? escapeHtml(gloss) : '؟'}</span>`;
+          list.appendChild(chip);
+        });
+        wrap.appendChild(title);
+        wrap.appendChild(list);
+        feedbackEl.appendChild(wrap);
+      }
+    }
   }
 }
 
@@ -869,7 +1258,8 @@ function escapeHtml(s){
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function checkAnswer(){
+// يحسب صح/غلط، يحدّث الحالة والنقاط والفيدباك، ويرجّع true/false. من غير أي انتقال تلقائي للسؤال الجاي.
+function evaluateAnswer(){
   const idx = current();
   const typed = inputEl.value;
   const correct = correctAnswer();
@@ -887,17 +1277,24 @@ function checkAnswer(){
 
   if(ok){
     inputEl.classList.remove('wrong'); inputEl.classList.add('right');
-    showFeedback(true, typed, correct);
-    updateDots();
-    scoreText.textContent = `صحيح: ${score()}`;
+  } else {
+    inputEl.classList.remove('right'); inputEl.classList.add('wrong');
+  }
+  showFeedback(ok, typed, correct);
+  updateDots();
+  scoreText.textContent = `صحيح: ${score()}`;
+  return ok;
+}
+
+// زرار "تحقق": يقيّم الإجابة، ولو صح بينتقل تلقائيًا بعد لحظة.
+function checkAnswer(){
+  const idx = current();
+  const ok = evaluateAnswer();
+  if(ok){
     setTimeout(()=>{
       const arr = data();
       if(idx < arr.length-1){ setCurrent(idx+1); saveLocal(); render(); }
     }, 1200);
-  } else {
-    inputEl.classList.remove('right'); inputEl.classList.add('wrong');
-    showFeedback(false, typed, correct);
-    updateDots();
   }
 }
 
@@ -905,7 +1302,14 @@ el('check-btn').addEventListener('click', checkAnswer);
 inputEl.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); checkAnswer(); }});
 
 el('prev-btn').addEventListener('click', ()=>{ const i=current(); if(i>0){ setCurrent(i-1); saveLocal(); render(); }});
-el('next-btn').addEventListener('click', ()=>{ const i=current(); if(i < data().length-1){ setCurrent(i+1); saveLocal(); render(); } });
+el('next-btn').addEventListener('click', ()=>{
+  const i = current();
+  // زرار "التالي" بقى بيعمل تحقق من إجابتك الحالية الأول (لو لسه ماتاتشيكتش) قبل ما يكمل
+  if(curState()[i].status === null){
+    evaluateAnswer();
+  }
+  if(i < data().length-1){ setCurrent(i+1); saveLocal(); render(); }
+});
 
 flagBtn.addEventListener('click', ()=>{
   const idx = current();
@@ -934,6 +1338,7 @@ function setChapter(newChapter){
   el('btn-chap-k2').classList.toggle('active', chapter==='k2');
   el('btn-chap-num').classList.toggle('active', chapter==='numbers');
   dirSwitch.style.display = (chapter === 'numbers') ? 'none' : 'flex';
+  convFullBtn.style.display = (chapter === 'k2') ? 'inline-flex' : 'none';
   buildDots();
   render();
 }
@@ -950,8 +1355,10 @@ el('btn-chap-num').addEventListener('click', ()=>setChapter('numbers'));
 el('btn-ar-de').addEventListener('click', ()=>setDirection('ar-de'));
 el('btn-de-ar').addEventListener('click', ()=>setDirection('de-ar'));
 
+convFullBtn.style.display = (chapter === 'k2') ? 'inline-flex' : 'none';
 buildDots();
 render();
 </script>
 </body>
 </html>
+
